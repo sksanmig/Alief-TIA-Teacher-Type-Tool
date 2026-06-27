@@ -4,67 +4,39 @@ import pandas as pd
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ BANNER (SAFE + CLEAN)
+# ✅ SAFE HEADER (NO HTML BUGS)
 # -----------------------------------
-st.markdown(
-    """
-    <div style="background-color:#008066; padding:15px; margin-bottom:20px;">
-        <div style="display:flex; align-items:center;">
-            <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png"
-                 style="height:60px; margin-right:20px;">
-            <div>
-                <div style="color:white; font-size:26px; font-weight:bold;">
-                    Alief ISD Teacher Profile Tool
-                </div>
-                <div style="color:white;">
-                    Determine your TIA Teacher Type
-                </div>
-            </div>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
+st.image(
+    "https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png",
+    width=200
 )
+
+st.markdown("<h2 style='color:#008066;'>Alief ISD Teacher Profile Tool</h2>", unsafe_allow_html=True)
+st.markdown("Determine your TIA Teacher Type")
+
+st.markdown("---")
 
 # -----------------------------------
 # ✅ STYLING
 # -----------------------------------
-st.markdown(
-    """
-    <style>
-    .stButton>button {
-        background-color: #008066;
-        color: white;
-        border-radius: 8px;
-        height: 3em;
-        width: 100%;
-        font-weight: bold;
-    }
-
-    .stTextInput input {
-        border: 2px solid #008066 !important;
-        border-radius: 6px;
-    }
-
-    .stRadio > div {
-        border: 2px solid #008066;
-        padding: 10px;
-        border-radius: 8px;
-    }
-
-    .stMultiSelect > div {
-        border: 2px solid #008066;
-        border-radius: 6px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# -----------------------------------
-# ✅ LINK
-# -----------------------------------
-pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com)"
+st.markdown("""
+<style>
+.stButton>button {
+    background-color: #008066;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+}
+.stTextInput input {
+    border: 2px solid #008066 !important;
+}
+.stRadio > div {
+    border: 2px solid #008066;
+    padding: 8px;
+    border-radius: 6px;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # -----------------------------------
 # ✅ INPUTS
@@ -87,7 +59,6 @@ if campus_type == "Early Learning Center":
 
 else:
 
-    # Grades
     if campus_type == "Elementary":
         grades = st.multiselect("Grades:", ["K","1","2","3","4","5"])
     elif campus_type == "Intermediate":
@@ -97,7 +68,6 @@ else:
     else:
         grades = st.multiselect("Grades:", ["9","10","11","12"])
 
-    # Assignment
     assignment = st.radio(
         "Assignment",
         [
@@ -129,16 +99,12 @@ if st.button("Show My Result"):
 
     if not name or not campus:
         st.error("Please complete required fields.")
-
     else:
 
         result_type = "Unknown"
 
         if campus_type == "Early Learning Center":
-            if pk_self == "Yes":
-                result_type = "1"
-            else:
-                result_type = "12"
+            result_type = "1" if pk_self == "Yes" else "12"
 
         else:
 
@@ -176,8 +142,11 @@ if st.button("Show My Result"):
             elif assignment == "RLA / Reading" and any(g in ["3","4","5","6","7","8"] for g in grades):
                 result_type = "7"
 
-            # ✅ HS NON-EOC
-ment == "PE":
+            # ✅ HIGH SCHOOL NON-EOC
+            elif campus_type == "High School":
+                result_type = "9"
+
+            elif assignment == "PE":
                 result_type = "10"
 
             elif assignment == "Special Education / Specialized Program":
@@ -186,20 +155,23 @@ ment == "PE":
             else:
                 result_type = "11"
 
+        # -----------------------------------
         # ✅ DESCRIPTIONS
+        # -----------------------------------
         descriptions = {
             "1": "PK Self-Contained General Education Teachers.",
             "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
             "5": "3-5 Self-Contained General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
             "6": "3-8 Math, Math/Science General Education Teachers. This type includes a student perception survey.",
-            "7": "3-8 RLA general education teachers. This type includes a student perception survey.",
-            "8": "STAAR-tested teachers including 5th & 8th Science, 8th Social Studies, and HS EOC courses.",
-            "9": "TEKSReady-supported teachers (non-STAAR tested).",
+            "7": "3-8 RLA General Education Teachers. This type includes a student perception survey.",
+            "8": "STAAR-tested teachers including 5th/8th Science, 8th Social Studies, and HS EOC courses.",
+            "9": "3-12 TEKSReady Teachers of non-STAAR courses.",
             "10": "K-12 Physical Education Teachers.",
-            "11": "SLO elective teachers.",
-            "12": "Special Programs teachers."
+            "11": "SLO-based elective teachers.",
+            "12": "Special program teachers."
         }
 
+        # ✅ ASSESSMENTS
         assessments = {
             "1": "Circle",
             "2": "Amplify mClass-RLA, iReady-Math",
@@ -218,6 +190,7 @@ ment == "PE":
         else:
             survey = "This teacher type does not include a student perception survey."
 
+        # ✅ DISPLAY
         st.success(f"You are TIA Teacher Type {result_type}")
 
         st.markdown("### Description")
@@ -228,5 +201,3 @@ ment == "PE":
 
         st.markdown("### Student Perception Survey")
         st.info(survey)
-
-        st.markdown(pdf_link)
