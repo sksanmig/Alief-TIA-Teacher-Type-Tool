@@ -43,36 +43,36 @@ with center:
     # -----------------------------------
     # ✅ STYLING
     # -----------------------------------
-    st.markdown("""
-    <style>
-    .stButton > button {
-        background-color: #008066;
-        color: white;
-        font-weight: bold;
-        border-radius: 8px;
-    }
+   st.markdown("""
+<style>
+.stButton > button {
+    background-color: #008066;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+}
 
-    .stButton > button:hover {
-        background-color: #006655;
-    }
+.stButton > button:hover {
+    background-color: #006655;
+}
 
-    .stTextInput input {
-        border: 2px solid #008066 !important;
-        border-radius: 6px;
-    }
+.stTextInput input {
+    border: 2px solid #008066 !important;
+    border-radius: 6px;
+}
 
-    .stRadio > div {
-        border: 2px solid #008066;
-        padding: 10px;
-        border-radius: 8px;
-    }
+.stRadio > div {
+    border: 2px solid #008066;
+    padding: 10px;
+    border-radius: 8px;
+}
 
-    .stMultiSelect > div {
-        border: 2px solid #008066;
-        border-radius: 6px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+.stMultiSelect > div {
+    border: 2px solid #008066;
+    border-radius: 6px;
+}
+</style>
+""", unsafe_allow_html=True)
 
     # -----------------------------------
     # ✅ INPUTS
