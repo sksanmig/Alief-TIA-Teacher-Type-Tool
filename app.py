@@ -11,7 +11,7 @@ st.markdown(
     """
     <div style="background-color:#008066; padding:20px; margin-bottom:25px;">
         <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
-            <img src="Alief Logo.png"
+            <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png"
                  style="height:70px; margin-right:25px;">
             <div>
                 <div style="color:white; font-size:28px; font-weight:bold;">
@@ -28,7 +28,7 @@ st.markdown(
 )
 
 # ✅ PDF LINK
-pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK
+pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
 
 # -----------------------------------
 # ✅ CENTER CONTENT
