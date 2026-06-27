@@ -43,7 +43,7 @@ with center:
     # -----------------------------------
     # ✅ STYLING
     # -----------------------------------
-   st.markdown("""
+  st.markdown("""
 <style>
 .stButton > button {
     background-color: #008066;
