@@ -4,7 +4,7 @@ import pandas as pd
 st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 
 # -----------------------------------
-# HEADER
+# ✅ HEADER (SAFE)
 # -----------------------------------
 col1, col2 = st.columns([1, 3])
 
@@ -27,7 +27,7 @@ with col2:
 st.markdown("---")
 
 # -----------------------------------
-# STYLING
+# ✅ GREEN STYLING
 # -----------------------------------
 st.markdown(
     """
@@ -40,20 +40,34 @@ st.markdown(
         width: 100%;
         font-weight: bold;
     }
+
+    .stButton>button:hover {
+        background-color: #006655;
+    }
+
     .stTextInput input {
         border: 2px solid #008066 !important;
         border-radius: 6px;
     }
+
     .stRadio > div {
         border: 2px solid #008066;
         padding: 10px;
         border-radius: 8px;
+    }
+
+    .stMultiSelect > div {
+        border: 2px solid #008066;
+        border-radius: 6px;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
+# -----------------------------------
+# LINK
+# -----------------------------------
 pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
 
 # -----------------------------------
@@ -127,15 +141,14 @@ if st.button("Show My Result"):
 
         else:
 
-            # ✅ SELF-CONTAINED FIX
+            # ✅ SELF-CONTAINED
             if assignment == "Self-Contained General Education":
-
                 if any(g in ["3","4","5"] for g in grades):
                     result_type = "5"
                 elif any(g in ["K","1","2"] for g in grades):
                     result_type = "2"
 
-            # ✅ TYPE 8
+            # ✅ TYPE 8 PRIORITY
             elif teaches_algebra1 == "Yes":
                 result_type = "8"
 
@@ -155,38 +168,3 @@ if st.button("Show My Result"):
                 result_type = "8"
 
             # ✅ TYPE 6 / 7
-            elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
-                result_type = "6"
-
-            elif assignment == "RLA / Reading" and any(g in ["3","4","5","6","7","8"] for g in grades):
-                result_type = "7"
-
-            elif campus_type == "High School":
-                result_type = "9"
-
-            elif assignment == "PE":
-                result_type = "10"
-
-            elif assignment == "Special Education / Specialized Program":
-                result_type = "12"
-
-            else:
-                result_type = "11"
-
-        # DISPLAY
-        st.success(f"You are TIA Teacher Type {result_type}")
-
-        st.markdown("### Description")
-        st.info("Refer to official document for full description.")
-
-        st.markdown("### TIA Assessments")
-        st.info("Refer to official document for assessment details.")
-
-        st.markdown("### Student Perception Survey")
-
-        if result_type in ["5","6","7","8","9","10","11"]:
-            st.info("This teacher type does include a student perception survey.")
-        else:
-            st.info("This teacher type does not include a student perception survey.")
-
-        st.markdown(pdf_link)
