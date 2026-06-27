@@ -1,11 +1,11 @@
 import streamlit as st
 import pandas as pd
 
-# ✅ Use wide for banner
+# ✅ Wide layout for banner
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ GREEN BANNER (WORKING)
+# ✅ GREEN BANNER (FIXED IMG TAG)
 # -----------------------------------
 st.markdown(
     """
@@ -122,7 +122,7 @@ with center:
             )
 
     # -----------------------------------
-    # ✅ RESULT LOGIC
+    # ✅ RESULT LOGIC (FULLY FIXED)
     # -----------------------------------
     if st.button("Show My Result"):
 
@@ -153,7 +153,8 @@ with center:
                 elif assignment == "Social Studies":
                     result_type = "8" if "8" in grades else "9"
 
-                elif teaches_eoc is not None and teaches_eoc != "None "8"
+                elif teaches_eoc is not None and teaches_eoc != "None":
+                    result_type = "8"
 
                 elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
                     result_type = "6"
@@ -190,7 +191,7 @@ with center:
             }
 
             # -----------------------------------
-            # ✅ ASSESSMENTS
+            # ✅ ASSESSMENTS (FIXED)
             # -----------------------------------
             assessments = {
                 "1": "Circle",
@@ -228,5 +229,5 @@ with center:
             st.markdown("### Student Perception Survey")
             st.info(survey)
 
-            # ✅ PDF LINK BACK
+            # ✅ PDF LINK
             st.markdown(pdf_link)
