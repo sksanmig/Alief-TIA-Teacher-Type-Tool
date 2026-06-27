@@ -3,17 +3,71 @@ import pandas as pd
 
 st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 
-# ✅ SAFE HEADER
-st.image(
-    "https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png",
-    width=180
-)
+# -----------------------------------
+# ✅ SAFE BANNER (STREAMLIT VERSION)
+# -----------------------------------
+col1, col2 = st.columns([1, 3])
 
-st.title("Alief ISD Teacher Profile Tool")
-st.subheader("Determine your TIA Teacher Type")
+with col1:
+    st.image(
+        "https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png",
+        width=120
+    )
+
+with col2:
+    st.markdown(
+        "<h2 style='margin-bottom:0; color:#008066;'>Alief ISD Teacher Profile Tool</h2>",
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        "<p style='margin-top:0;'>Determine your TIA Teacher Type</p>",
+        unsafe_allow_html=True
+    )
 
 st.markdown("---")
 
+# -----------------------------------
+# ✅ GREEN STYLING (RESTORED)
+# -----------------------------------
+st.markdown(
+    """
+    <style>
+    .stButton>button {
+        background-color: #008066;
+        color: white;
+        border-radius: 8px;
+        height: 3em;
+        width: 100%;
+        font-weight: bold;
+    }
+
+    .stButton>button:hover {
+        background-color: #006655;
+    }
+
+    .stTextInput input {
+        border: 2px solid #008066 !important;
+        border-radius: 6px;
+    }
+
+    .stRadio > div {
+        border: 2px solid #008066;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .stMultiSelect > div {
+        border: 2px solid #008066;
+        border-radius: 6px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# -----------------------------------
+# LINK
+# -----------------------------------
 pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
 
 # -----------------------------------
@@ -115,22 +169,19 @@ if st.button("Show My Result"):
                 result_type = "11"
 
         # -----------------------------------
-        # ✅ FULL DESCRIPTIONS (FROM PDF)
+        # DESCRIPTIONS
         # -----------------------------------
         descriptions = {
             "1": "PK Self-Contained General Education Teachers.",
-            "6": "3-8 Math, Math/Science General Education Teachers. This type includes a student perception survey.",
-            "7": "3-8 RLA and Dyslexia Teachers. This type includes a student perception survey.",
-            "8": "5-8 STAAR Science, 8th Social Studies, and STAAR EOC teachers. This type includes a student perception survey.",
-            "9": "3-12 TEKSReady general education teachers. This type includes a student perception survey.",
-            "10": "K-12 Physical Education teachers. This type includes a student perception survey.",
-            "11": "3-12 SLO elective teachers. This type includes a student perception survey.",
-            "12": "Special Education, ALC, ESCE, or specialized program teachers."
+            "6": "3-8 Math teachers (non-Algebra I). This type includes a student perception survey.",
+            "7": "3-8 RLA teachers and Dyslexia. This type includes a student perception survey.",
+            "8": "STAAR-tested teachers (5th/8th Science, 8th Social Studies, EOC). This type includes a student perception survey.",
+            "9": "TEKSReady-supported courses. This type includes a student perception survey.",
+            "10": "Physical Education teachers. This type includes a student perception survey.",
+            "11": "SLO-based elective teachers. This type includes a student perception survey.",
+            "12": "Special Programs (SPED, ALC, etc.)."
         }
 
-        # -----------------------------------
-        # ✅ ASSESSMENTS ONLY
-        # -----------------------------------
         assessments = {
             "1": "Circle",
             "6": "iReady Math, STAAR VAM",
@@ -142,24 +193,20 @@ if st.button("Show My Result"):
             "12": "SLO"
         }
 
-        # -----------------------------------
-        # ✅ STUDENT SURVEY
-        # -----------------------------------
+        # Student Survey
         if result_type in ["5","6","7","8","9","10","11"]:
             survey = "This teacher type does include a student perception survey for students in grades 3-12."
         else:
             survey = "This teacher type does not include a student perception survey."
 
-        # -----------------------------------
-        # ✅ DISPLAY
-        # -----------------------------------
+        # DISPLAY
         st.success(f"You are TIA Teacher Type {result_type}")
 
         st.markdown("### Description")
-        st.info(descriptions.get(result_type, "Description not available"))
+        st.info(descriptions.get(result_type, ""))
 
         st.markdown("### TIA Assessments")
-        st.info(assessments.get(result_type, "Assessment not available"))
+        st.info(assessments.get(result_type, ""))
 
         st.markdown("### Student Perception Survey")
         st.info(survey)
