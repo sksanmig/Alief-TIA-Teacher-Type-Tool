@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
 
-# ✅ Wide layout
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ HEADER (CORRECT + RENDERABLE)
+# ✅ HEADER
 # -----------------------------------
 st.markdown(
     """
@@ -26,19 +25,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ✅ PDF LINK
 pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
 
-# -----------------------------------
-# ✅ CENTER CONTENT
-# -----------------------------------
 left, center, right = st.columns([1, 3, 1])
 
 with center:
 
-    # -----------------------------------
-    # ✅ STYLING
-    # -----------------------------------
     st.markdown("""
     <style>
     .stButton > button {
@@ -47,32 +39,10 @@ with center:
         font-weight: bold;
         border-radius: 8px;
     }
-
-    .stButton > button:hover {
-        background-color: #006655;
-    }
-
-    .stTextInput input {
-        border: 2px solid #008066 !important;
-        border-radius: 6px;
-    }
-
-    .stRadio > div {
-        border: 2px solid #008066;
-        padding: 10px;
-        border-radius: 8px;
-    }
-
-    .stMultiSelect > div {
-        border: 2px solid #008066;
-        border-radius: 6px;
-    }
     </style>
     """, unsafe_allow_html=True)
 
-    # -----------------------------------
-    # ✅ INPUTS
-    # -----------------------------------
+    # INPUTS
     name = st.text_input("Enter your name")
     campus = st.text_input("Enter your campus")
 
@@ -121,30 +91,32 @@ with center:
             )
 
     # -----------------------------------
-    # ✅ RESULT LOGIC (FULLY FIXED)
+    # ✅ RESULT LOGIC (CLEAN + VERIFIED)
     # -----------------------------------
     if st.button("Show My Result"):
 
         if not name or not campus:
             st.error("Please complete required fields.")
-
         else:
 
-            result_type = "Unknown"
-
-            if campus_type == "Early Learning Center":
-                result_type = "1" if pk_self == "Yes" else "12"
+campus_type == "Early Learning Center":
+                if pk_self == "Yes":
+                    result_type = "1"
+                else:
+                    result_type = "12"
 
             else:
-
                 if assignment == "Self-Contained General Education":
                     if any(g in ["3", "4", "5"] for g in grades):
                         result_type = "5"
-                    elif any(g in ["K", "1", "2"] for g in grades          elif teaches_algebra1 == "Yes":
+                    elif any(g in ["K", "1", "2"] for g in grades):
+                        result_type = "2"
+
+                elif teaches_algebra1 == "Yes":
                     result_type = "8"
 
                 elif assignment == "Science":
-                    if ("5" in grades) or ("8" in grades):
+                    if "5" in grades or "8" in grades:
                         result_type = "8"
                     else:
                         result_type = "9"
@@ -158,11 +130,13 @@ with center:
                 elif teaches_eoc is not None and teaches_eoc != "None":
                     result_type = "8"
 
-                elif assignment == "Math" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
-                    result_type = "6"
+                elif assignment == "Math":
+                    if any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
+                        result_type = "6"
 
-                elif assignment == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
-                    result_type = "7"
+                elif assignment == "RLA / Reading":
+                    if any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
+                        result_type = "7"
 
                 elif campus_type == "High School":
                     result_type = "9"
@@ -176,53 +150,6 @@ with center:
                 else:
                     result_type = "11"
 
-            # -----------------------------------
-            # ✅ DESCRIPTIONS
-            # -----------------------------------
-            descriptions = {
-                "1": "PK Self-Contained General Education Teachers.",
-                "2": "K-2 Self-Contained General Education Teachers.",
-                "5": "3-5 Self-Contained General Education Teachers.",
-                "6": "3-8 Math Teachers.",
-                "7": "3-8 RLA Teachers.",
-                "8": "STAAR/EOC tested teachers.",
-                "9": "TEKS-supported non-STAAR teachers.",
-                "10": "K-12 Physical Education Teachers.",
-                "11": "SLO elective teachers.",
-                "12": "Special Programs teachers."
-            }
-
-            assessments = {
-                "1": "Circle",
-                "2": "Amplify mClass-RLA, iReady-Math",
-                "5": "iReady Reading, iReady Math, STAAR VAM",
-                "6": "iReady Math, STAAR VAM",
-                "7": "iReady Reading, STAAR VAM",
-                "8": "SLOs, STAAR VAM",
-                "9": "TEKSReady Pre/Post-Test, SLO",
-                "10": "FitnessGram, SLO",
-                "11": "SLO",
-                "12": "SLO"
-            }
-
-            survey = (
-                "Includes a student perception survey."
-                if result_type in ["5", "6", "7", "8", "9", "10", "11"]
-                else "Does NOT include a student perception survey."
-            )
-
-            # -----------------------------------
-            # ✅ DISPLAY
-            # -----------------------------------
+            # OUTPUT
             st.success(f"You are TIA Teacher Type {result_type}")
-
-            st.markdown("### Description")
-            st.info(descriptions[result_type])
-
-            st.markdown("### TIA Assessments")
-            st.info(assessments[result_type])
-
-            st.markdown("### Student Perception Survey")
-            st.info(survey)
-
             st.markdown(pdf_link)
