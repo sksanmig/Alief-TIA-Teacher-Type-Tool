@@ -1,11 +1,11 @@
 import streamlit as st
 import pandas as pd
 
-# ✅ Centered layout
+# ✅ Clean centered layout
 st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 
 # -----------------------------------
-# ✅ CLEAN HEADER (NO HTML ISSUES)
+# ✅ STABLE HEADER (NO HTML)
 # -----------------------------------
 col1, col2 = st.columns([1, 4])
 
@@ -22,7 +22,7 @@ with col2:
 st.markdown("---")
 
 # -----------------------------------
-# ✅ STYLING
+# ✅ CLEAN STYLING
 # -----------------------------------
 st.markdown("""
 <style>
@@ -119,14 +119,15 @@ if st.button("Show My Result"):
             result_type = "1" if pk_self == "Yes" else "12"
 
         else:
-            # Self-contained logic
+
+            # ✅ Self-contained
             if assignment == "Self-Contained General Education":
                 if any(g in ["3","4","5"] for g in grades):
                     result_type = "5"
                 elif any(g in ["K","1","2"] for g in grades):
                     result_type = "2"
 
-            # STAAR priority
+            # ✅ STAAR priority
             elif teaches_algebra1 == "Yes":
                 result_type = "8"
 
@@ -139,7 +140,7 @@ if st.button("Show My Result"):
             elif teaches_eoc is not None and teaches_eoc != "None":
                 result_type = "8"
 
-            # Math / RLA
+            # ✅ Math / RLA
             elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
                 result_type = "6"
 
@@ -158,9 +159,7 @@ if st.button("Show My Result"):
             else:
                 result_type = "11"
 
-        # -----------------------------------
-        # ✅ DESCRIPTIONS (FULL)
-        # -----------------------------------
+        # ✅ DESCRIPTIONS
         descriptions = {
             "1": "PK Self-Contained General Education Teachers.",
             "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
@@ -176,9 +175,7 @@ if st.button("Show My Result"):
             "12": "Other PK-12 Special Education Teachers (Life, Reach, Read 180), ALC Teachers, ESCE Teachers, or Block ELC Teachers."
         }
 
-        # -----------------------------------
-        # ✅ ASSESSMENTS (FIXED)
-        # -----------------------------------
+        # ✅ ASSESSMENTS
         assessments = {
             "1": "Circle",
             "2": "Amplify mClass-RLA, iReady-Math",
@@ -194,18 +191,14 @@ if st.button("Show My Result"):
             "12": "SLO"
         }
 
-        # -----------------------------------
         # ✅ SURVEY
-        # -----------------------------------
         survey = (
             "This teacher type DOES include a student perception survey for grades 3–12."
             if result_type in ["5","6","7","8","9","10","11"]
             else "This teacher type does NOT include a student perception survey."
         )
 
-        # -----------------------------------
         # ✅ DISPLAY
-        # -----------------------------------
         st.success(f"You are TIA Teacher Type {result_type}")
 
         st.markdown("### Description")
