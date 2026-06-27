@@ -8,16 +8,17 @@ st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 # ✅ GREEN BANNER (FIXED IMG TAG)
 # -----------------------------------
 
+
 import base64
 
 with open("Alief Logo.png", "rb") as f:
     encoded = base64.b64encode(f.read()).decode()
 
+# ✅ HEADER (clean, no escaped HTML)
 st.markdown(f"""
-<div style="background-color:#008066; padding:25px; margin-bottom:25px;">
+<div style="background-color:#008066; padding:20px; margin-bottom:25px;">
     <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
-        <img src="data:image/png;base64,{encoded}" 
-             style="height:100px; margin-right:30px;">
+        <img src="data:image/png;base64,{encoded}" style="height:100px; margin-right:25px;">
         <div>
             <div style="color:white; font-size:30px; font-weight:bold;">
                 Alief ISD Teacher Profile Tool
@@ -28,6 +29,7 @@ st.markdown(f"""
         </div>
     </div>
 </div>
+""", unsafe_allow_html=True)
 
 
 # ✅ PDF LINK
