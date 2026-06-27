@@ -1,26 +1,17 @@
 import streamlit as st
 import pandas as pd
 
-# ✅ IMPORTANT: CENTERED LAYOUT (fixes stretched inputs)
+# ✅ CENTERED LAYOUT (fixes stretched inputs)
 st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 
 # -----------------------------------
-# ✅ TRUE BANNER (FIXED PROPERLY)
+# ✅ BANNER (WORKING VERSION)
 # -----------------------------------
 st.markdown(
     """
-    <div style="
-        background-color:#008066;
-        padding:15px;
-        margin-bottom:20px;
-        border-radius:6px;
-    ">
-        <div style="
-            display:flex;
-            align-items:center;
-        ">
-            <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png"
-                 style="height:60px; margin-right:20px;">
+    <div style="background-color:#008066; padding:15px; margin-bottom:20px; border-radius:6px;">
+        <div style="display:flex; align-items:center;">
+            https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png
             <div>
                 <div style="color:white; font-size:24px; font-weight:bold;">
                     Alief ISD Teacher Profile Tool
@@ -36,32 +27,39 @@ st.markdown(
 )
 
 # -----------------------------------
-# ✅ GREEN STYLING
+# ✅ STYLING (FIXED CSS)
 # -----------------------------------
-st.markdown("""
-<style>
-.stButton>button {
-    background-color: #008066;
-    color: white;
-    font-weight: bold;
-    border-radius: 8px;
-}
-.stButton>button:hover {
-    background-color: #006655;
-}
-.stTextInput input {
-    border: 2px solid #008066 !important;
-}
-.stRadio > div {
-    border: 2px solid #008066;
-    padding: 8px;
-    border-radius: 6px;
-}
-.stMultiSelect > div {
-    border: 2px solid #008066;
-}
-</style>
-""", unsafe_allow_html=True)
+st.markdown(
+    """
+    <style>
+    .stButton>button {
+        background-color: #008066;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+    }
+
+    .stButton>button:hover {
+        background-color: #006655;
+    }
+
+    .stTextInput input {
+        border: 2px solid #008066 !important;
+    }
+
+    .stRadio > div {
+        border: 2px solid #008066;
+        padding: 8px;
+        border-radius: 6px;
+    }
+
+    .stMultiSelect > div {
+        border: 2px solid #008066;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # -----------------------------------
 # ✅ INPUTS
@@ -124,6 +122,7 @@ if st.button("Show My Result"):
 
     if not name or not campus:
         st.error("Please complete required fields.")
+
     else:
 
         result_type = "Unknown"
@@ -140,7 +139,7 @@ if st.button("Show My Result"):
                 elif any(g in ["K","1","2"] for g in grades):
                     result_type = "2"
 
-            # ✅ TYPE 8
+            # ✅ TYPE 8 PRIORITY
             elif teaches_algebra1 == "Yes":
                 result_type = "8"
 
@@ -176,7 +175,10 @@ if st.button("Show My Result"):
                 result_type = "12"
 
             else:
-                
+                result_type = "11"
+
+        # ✅ DESCRIPTIONS
+        descriptions = {
             "1": "PK Self-Contained General Education Teachers.",
             "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
             "5": "3-5 Self-Contained General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
@@ -203,7 +205,7 @@ if st.button("Show My Result"):
         }
 
         if result_type in ["5","6","7","8","9","10","11"]:
-            survey = "This teacher type does include a student perception survey for students in grades 3-12."
+            survey = "This teacher type does include a student perception survey for students in grades 3–12."
         else:
             survey = "This teacher type does not include a student perception survey."
 
