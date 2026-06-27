@@ -3,7 +3,7 @@ import pandas as pd
 
 st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 
-# ✅ SAFE HEADER (NO HTML BREAKAGE)
+# ✅ SAFE HEADER
 st.image(
     "https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png",
     width=180
@@ -17,16 +17,13 @@ st.markdown("---")
 pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
 
 # -----------------------------------
-# TEACHER INFO
+# INPUTS
 # -----------------------------------
 name = st.text_input("Enter your name")
 campus = st.text_input("Enter your campus")
 
 st.markdown("---")
 
-# -----------------------------------
-# CAMPUS TYPE
-# -----------------------------------
 campus_type = st.radio(
     "What type of campus do you teach at?",
     ["Early Learning Center", "Elementary", "Intermediate", "Middle School", "High School"]
@@ -36,10 +33,9 @@ campus_type = st.radio(
 # ELC
 # -----------------------------------
 if campus_type == "Early Learning Center":
-    pk_self = st.radio("Are you a PK Self-Contained teacher?", ["Yes", "No"])
+    pk_self = st.radio("Are you a PK Self-Contained teacher?", ["Yes","No"])
 
 else:
-
     if campus_type == "Elementary":
         grades = st.multiselect("Grades:", ["K","1","2","3","4","5"])
     elif campus_type == "Intermediate":
@@ -51,27 +47,17 @@ else:
 
     assignment = st.radio(
         "Assignment",
-        [
-            "Math",
-            "RLA / Reading",
-            "Science",
-            "Social Studies",
-            "PE",
-            "Special Education / Specialized Program"
-        ]
+        ["Math","RLA / Reading","Science","Social Studies","PE","Special Education / Specialized Program"]
     )
 
     teaches_algebra1 = None
     if assignment == "Math" and campus_type in ["Middle School","High School"]:
-        teaches_algebra1 = st.radio(
-            "Do you teach Algebra I (STAAR EOC)?",
-            ["Yes","No"]
-        )
+        teaches_algebra1 = st.radio("Teach Algebra I?", ["Yes","No"])
 
     teaches_eoc = None
     if campus_type == "High School" and assignment in ["Science","RLA / Reading","Social Studies"]:
         teaches_eoc = st.radio(
-            "Do you teach any STAAR EOC courses?",
+            "Teach EOC course?",
             ["Biology","English I","English II","U.S. History","None"]
         )
 
@@ -128,20 +114,61 @@ if st.button("Show My Result"):
             else:
                 result_type = "11"
 
-        # ✅ DISPLAY BOXES
+        # -----------------------------------
+        # ✅ FULL DESCRIPTIONS (FROM PDF)
+        # -----------------------------------
+        descriptions = {
+            "1": "PK Self-Contained General Education Teachers.",
+            "6": "3-8 Math, Math/Science General Education Teachers. This type includes a student perception survey.",
+            "7": "3-8 RLA and Dyslexia Teachers. This type includes a student perception survey.",
+            "8": "5-8 STAAR Science, 8th Social Studies, and STAAR EOC teachers. This type includes a student perception survey.",
+            "9": "3-12 TEKSReady general education teachers. This type includes a student perception survey.",
+            "10": "K-12 Physical Education teachers. This type includes a student perception survey.",
+            "11": "3-12 SLO elective teachers. This type includes a student perception survey.",
+            "12": "Special Education, ALC, ESCE, or specialized program teachers."
+        }
+
+        # -----------------------------------
+        # ✅ ASSESSMENTS ONLY
+        # -----------------------------------
+        assessments = {
+            "1": "Circle",
+            "6": "iReady Math, STAAR VAM",
+            "7": "iReady Reading, STAAR VAM",
+            "8": "SLOs, STAAR VAM",
+            "9": "TEKSReady Pre/Post-Test, SLO",
+            "10": "FitnessGram, SLO",
+            "11": "SLO",
+            "12": "SLO"
+        }
+
+        # -----------------------------------
+        # ✅ STUDENT SURVEY
+        # -----------------------------------
+        if result_type in ["5","6","7","8","9","10","11"]:
+            survey = "This teacher type does include a student perception survey for students in grades 3-12."
+        else:
+            survey = "This teacher type does not include a student perception survey."
+
+        # -----------------------------------
+        # ✅ DISPLAY
+        # -----------------------------------
         st.success(f"You are TIA Teacher Type {result_type}")
 
         st.markdown("### Description")
-        st.info("Refer to the official document for full description.")
+        st.info(descriptions.get(result_type, "Description not available"))
 
         st.markdown("### TIA Assessments")
-        st.info("Refer to the official document for assessment details.")
+        st.info(assessments.get(result_type, "Assessment not available"))
 
         st.markdown("### Student Perception Survey")
-
-        if result_type in ["5","6","7","8","9","10","11"]:
-            st.info("This teacher type DOES include a student perception survey.")
-        else:
-            st.info("This teacher type does NOT include a student perception survey.")
+        st.info(survey)
 
         st.markdown(pdf_link)
+
+        # SAVE
+        pd.DataFrame([{
+            "Name": name,
+            "Campus": campus,
+            "Teacher Type": result_type
+        }]).to_csv("teacher_results.csv", mode="a", header=False, index=False)
