@@ -1,18 +1,20 @@
 import streamlit as st
 import pandas as pd
 
-# ✅ FIXED LAYOUT
+# ✅ CENTERED LAYOUT
 st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 
 # -----------------------------------
-# ✅ WORKING FULL BANNER
+# ✅ BANNER WITH WHITE LOGO (FIXED)
 # -----------------------------------
 st.markdown(
     """
     <div style="background-color:#008066; padding:15px; margin-bottom:20px; border-radius:6px;">
         <div style="display:flex; align-items:center;">
-            <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png"
-                 style="height:60px; margin-right:20px;">
+            
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Alief_ISD_Logo.svg/512px-Alief_ISD_Logo.svg.png"
+                 style="height:60px; margin-right:20px; filter: brightness(0) invert(1);">
+            
             <div>
                 <div style="color:white; font-size:24px; font-weight:bold;">
                     Alief ISD Teacher Profile Tool
@@ -28,41 +30,38 @@ st.markdown(
 )
 
 # -----------------------------------
-# ✅ CLEAN CSS (NO BROKEN BRACKETS)
+# ✅ STYLING
 # -----------------------------------
-st.markdown(
-    """
-    <style>
-    .stButton>button {
-        background-color: #008066;
-        color: white;
-        font-weight: bold;
-        border-radius: 8px;
-    }
+st.markdown("""
+<style>
+.stButton>button {
+    background-color: #008066;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+}
 
-    .stButton>button:hover {
-        background-color: #006655;
-    }
+.stButton>button:hover {
+    background-color: #006655;
+}
 
-    .stTextInput input {
-        border: 2px solid #008066 !important;
-        border-radius: 6px;
-    }
+.stTextInput input {
+    border: 2px solid #008066 !important;
+    border-radius: 6px;
+}
 
-    .stRadio > div {
-        border: 2px solid #008066;
-        padding: 8px;
-        border-radius: 6px;
-    }
+.stRadio > div {
+    border: 2px solid #008066;
+    padding: 8px;
+    border-radius: 6px;
+}
 
-    .stMultiSelect > div {
-        border: 2px solid #008066;
-        border-radius: 6px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+.stMultiSelect > div {
+    border: 2px solid #008066;
+    border-radius: 6px;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # -----------------------------------
 # ✅ INPUTS
@@ -85,7 +84,6 @@ if campus_type == "Early Learning Center":
 
 else:
 
-    # ✅ GRADE SELECTION
     if campus_type == "Elementary":
         grades = st.multiselect("Grades:", ["K","1","2","3","4","5"])
     elif campus_type == "Intermediate":
@@ -95,7 +93,6 @@ else:
     else:
         grades = st.multiselect("Grades:", ["9","10","11","12"])
 
-    # ✅ ASSIGNMENT
     assignment = st.radio(
         "Assignment",
         [
@@ -109,12 +106,10 @@ else:
         ]
     )
 
-    # ✅ ALGEBRA I
     teaches_algebra1 = None
     if assignment == "Math" and campus_type in ["Middle School","High School"]:
         teaches_algebra1 = st.radio("Teach Algebra I?", ["Yes","No"])
 
-    # ✅ EOC
     teaches_eoc = None
     if campus_type == "High School" and assignment in ["Science","RLA / Reading","Social Studies"]:
         teaches_eoc = st.radio(
@@ -139,14 +134,12 @@ if st.button("Show My Result"):
 
         else:
 
-            # ✅ SELF-CONTAINED LOGIC
             if assignment == "Self-Contained General Education":
                 if any(g in ["3","4","5"] for g in grades):
                     result_type = "5"
                 elif any(g in ["K","1","2"] for g in grades):
                     result_type = "2"
 
-            # ✅ TYPE 8 PRIORITY
             elif teaches_algebra1 == "Yes":
                 result_type = "8"
 
@@ -165,7 +158,6 @@ if st.button("Show My Result"):
             elif teaches_eoc is not None and teaches_eoc != "None":
                 result_type = "8"
 
-            # ✅ TYPE 6 / 7
             elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
                 result_type = "6"
 
@@ -184,42 +176,42 @@ if st.button("Show My Result"):
             else:
                 result_type = "11"
 
-        # ✅ DESCRIPTIONS (FULL)
+        # ✅ DESCRIPTIONS
         descriptions = {
             "1": "PK Self-Contained General Education Teachers.",
             "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
-            "3": "K-2 Math, Math/Science General Education Teacherss.",
+            "3": "K-2 Math, Math/Science General Education Teachers and In-Class Support Teachers.",
+            "4": "K-2 RLA, RLA/Social Studies General Education Teachers, In-Class Support Teachers, and Dyslexia Teachers.",
             "5": "3-5 Self-Contained General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
-            "6": "3-8 Math teachers. This type includes a student perception survey.",
-            "7": "3-8 RLA teachers. This type includes a student perception survey.",
-            "8": "STAAR-tested teachers (5th/8th Science, 8th SS, and HS EOC). This type includes a student perception survey.",
-            "9": "TEKSReady teachers (non-STAAR tested). This type includes a student perception survey.",
-            "10": "Physical Education teachers. This type includes a student perception survey.",
-            "11": "SLO elective teachers. This type includes a student perception survey.",
-            "12": "Special program teachers."
+            "6": "3-8 Math, Math/Science General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
+            "7": "3-8 RLA, RLA/Social Studies General Education Teachers, In-Class Support Teachers, Dyslexia Teachers, and ELD Interventionist. This type includes a student perception survey.",
+            "8": "5-8 STAAR Science and STAAR Social Studies Teachers, 9-12 STAAR EOC teachers, In-Class Support Teachers, and general Interventionist. This type includes a student perception survey.",
+            "9": "3-12 TEKSReady general education and In-Class ent perception survey.",
+            "10": "K-12 Physical Education Teachers. Student Growth Measures: This type includes a student perception survey.",
+            "11": "3-12 SLO Block and Elective General Education Teachers. This type includes a student perception survey.",
+            "12": "Other PK-12 Special Education Teachers (Life, Reach, Read 180), ALC Teachers, ESCE Teachers, or Block ELC Teachers."
         }
 
-        # ✅ ASSESSMENTS
         assessments = {
             "1": "Circle",
             "2": "Amplify mClass-RLA, iReady-Math",
-            "5": "iReady Reading, iReady Math, STAAR VAM",
-            "6": "iReady Math, STAAR VAM",
-            "7": "iReady Reading, STAAR VAM",
+            "3": "iReady-Math, STEMScopes",
+            "4": "iReady-Reading, Amplify mClass-RLA",
+            "5": "iReady-Math, iReady-Reading, STAAR VAM",
+            "6": "iReady-Math, Teacher STAAR VAM",
+            "7": "iReady-Reading, Teacher STAAR VAM",
             "8": "SLOs, Teacher STAAR VAM",
-            "9": "TEKSReady Pre/Post-Test, SLO",
-            "10": "FitnessGram, SLO",
+            "9": "SLO, TEKSReady Pre/Post-Test",
+            "10": "SLO, FitnessGram",
             "11": "SLO",
             "12": "SLO"
         }
 
-        # ✅ SURVEY
         if result_type in ["5","6","7","8","9","10","11"]:
-            survey = "This teacher type DOES include a student perception survey for grades 3–12."
+            survey = "This teacher type does include a student perception survey for students in grades 3–12."
         else:
-            survey = "This teacher type does NOT include a student perception survey."
+            survey = "This teacher type does not include a student perception survey."
 
-        # ✅ DISPLAY
         st.success(f"You are TIA Teacher Type {result_type}")
 
         st.markdown("### Description")
