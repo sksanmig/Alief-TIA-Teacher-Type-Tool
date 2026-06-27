@@ -1,52 +1,26 @@
 import streamlit as st
 import pandas as pd
 
-# ✅ CENTERED LAYOUT
+# ✅ Keep layout clean and centered
 st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 
 # -----------------------------------
-# ✅ WHITE-BOX BANNER (FINAL)
-# -----------------------------------
-# -----------------------------------
-# ✅ WHITE-BOX BANNER (FIXED FOR REAL)
+# ✅ FINAL WORKING BANNER (WHITE BOX)
 # -----------------------------------
 st.markdown(
     """
-    <div style="
-        background-color:#008066;
-        padding:15px;
-        margin-bottom:20px;
-        border-radius:6px;
-    ">
+    <div style="background-color:#008066; padding:15px; margin-bottom:20px; border-radius:6px;">
         <div style="display:flex; align-items:center;">
 
-            <!-- WHITE BOX -->
-            <div style="
-                background-color:white;
-                padding:8px 16px;
-                border-radius:6px;
-                margin-right:20px;
-                display:flex;
-                align-items:center;
-            ">
-                <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png"
-                     style="height:45px;">
+            <div style="background-color:white; padding:8px 16px; border-radius:6px; margin-right:20px;">
+                <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png" style="height:45px;">
             </div>
 
-            <!-- TEXT -->
             <div>
-                <div style="
-                    color:white;
-                    font-size:22px;
-                    font-weight:bold;
-                ">
+                <div style="color:white; font-size:22px; font-weight:bold;">
                     Alief ISD Teacher Profile Tool
                 </div>
-
-                <div style="
-                    color:white;
-                    font-size:14px;
-                ">
+                <div style="color:white; font-size:14px;">
                     Determine your TIA Teacher Type
                 </div>
             </div>
@@ -63,14 +37,14 @@ st.markdown(
 st.markdown(
     """
     <style>
-    .stButton>button {
+    .stButton > button {
         background-color: #008066;
         color: white;
         font-weight: bold;
         border-radius: 8px;
     }
 
-    .stButton>button:hover {
+    .stButton > button:hover {
         background-color: #006655;
     }
 
@@ -111,7 +85,7 @@ campus_type = st.radio(
 # ✅ ELC
 # -----------------------------------
 if campus_type == "Early Learning Center":
-    pk_self = st.radio("Are you a PK Self-Contained teacher?", ["Yes","No"])
+    pk_self = st.radio("Are you a PK Self-Contained teacher?", ["Yes", "No"])
 
 else:
 
@@ -142,109 +116,3 @@ else:
         teaches_algebra1 = st.radio("Teach Algebra I?", ["Yes","No"])
 
     teaches_eoc = None
-    if campus_type == "High School" and assignment in ["Science","RLA / Reading","Social Studies"]:
-        teaches_eoc = st.radio(
-            "Teach EOC course?",
-            ["Biology","English I","English II","U.S. History","None"]
-        )
-
-# -----------------------------------
-# ✅ RESULT
-# -----------------------------------
-if st.button("Show My Result"):
-
-    if not name or not campus:
-        st.error("Please complete required fields.")
-
-    else:
-
-        result_type = "Unknown"
-
-        if campus_type == "Early Learning Center":
-            result_type = "1" if pk_self == "Yes" else "12"
-
-        else:
-
-            if assignment == "Self-Contained General Education":
-                if any(g in ["3","4","5"] for g in grades):
-                    result_type = "5"
-                elif any(g in ["K","1","2"] for g in grades):
-                    result_type = "2"
-
-            elif teaches_algebra1 == "Yes":
-                result_type = "8"
-
-            elif assignment == "Science":
-                if "5" in grades or "8" in grades:
-                    result_type = "8"
-                else:
-                    result_type = "9"
-
-            elif assignment == "Social Studies":
-                if "8" in grades:
-                    result_type = "8"
-                else:
-                    result_type = "9"
-
-            elif teaches_eoc is not None and teaches_eoc != "None":
-                result_type = "8"
-
-            elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
-                result_type = "6"
-
-            elif assignment == "RLA / Reading" and any(g in ["3","4","5","6","7","8"] for g in grades):
-                result_type = "7"
-
-            elif campus_type == "High School":
-                result_type = "9"
-
-            elif assignment == "PE":
-                result_type = "10"
-
-            elif assignment == "Special Education / Specialized Program":
-                result_type = "12"
-
-            else:
-                result_type = "11"
-
-        descriptions = {
-            "1": "PK Self-Contained General Education Teachers.",
-            "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
-            "5": "3-5 Self-Contained General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
-            "6": "3-8 Math, Math/Science General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
-            "7": "3-8 RLA, RLA/Social Studies General Education Teachers, Dyslexia Teachers.",
-            "8": "5-8 STAAR Science, 8th Social Studies, and STAAR EOC teachers.",
-            "9": "3-12 TEKSReady teachers of non-STAAR courses.",
-            "10": "K-12 Physical Education teachers.",
-            "11": "3-12 SLO elective teachers.",
-            "12": "Special program teachers."
-        }
-
-        assessments = {
-            "1": "Circle",
-            "2": "Amplify mClass-RLA, iReady-Math",
-            "5": "iReady Reading, iReady Math, STAAR VAM",
-            "6": "iReady Math, STAAR VAM",
-            "7": "iReady Reading, STAAR VAM",
-            "8": "SLOs, STAAR VAM",
-            "9": "TEKSReady Pre/Post-Test, SLO",
-            "10": "FitnessGram, SLO",
-            "11": "SLO",
-            "12": "SLO"
-        }
-
-        if result_type in ["5","6","7","8","9","10","11"]:
-            survey = "This teacher type DOES include a student perception survey for grades 3–12."
-        else:
-            survey = "This teacher type does NOT include a student perception survey."
-
-        st.success(f"You are TIA Teacher Type {result_type}")
-
-        st.markdown("### Description")
-        st.info(descriptions.get(result_type))
-
-        st.markdown("### TIA Assessments")
-        st.info(assessments.get(result_type))
-
-        st.markdown("### Student Perception Survey")
-        st.info(survey)
