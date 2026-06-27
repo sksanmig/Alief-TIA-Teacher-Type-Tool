@@ -7,6 +7,9 @@ st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 # -----------------------------------
 # ✅ WHITE-BOX BANNER (FINAL)
 # -----------------------------------
+# -----------------------------------
+# ✅ WHITE-BOX BANNER (FIXED FOR REAL)
+# -----------------------------------
 st.markdown(
     """
     <div style="
@@ -15,12 +18,9 @@ st.markdown(
         margin-bottom:20px;
         border-radius:6px;
     ">
-        <div style="
-            display:flex;
-            align-items:center;
-        ">
-            
-            <!-- ✅ WHITE BOX FOR LOGO -->
+        <div style="display:flex; align-items:center;">
+
+            <!-- WHITE BOX -->
             <div style="
                 background-color:white;
                 padding:8px 16px;
@@ -33,7 +33,7 @@ st.markdown(
                      style="height:45px;">
             </div>
 
-            <!-- ✅ TEXT -->
+            <!-- TEXT -->
             <div>
                 <div style="
                     color:white;
