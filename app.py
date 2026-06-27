@@ -3,46 +3,21 @@ import pandas as pd
 
 st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 
-# -----------------------------------
-# ✅ BANNER HEADER (FIXED)
-# -----------------------------------
-st.markdown(
-    """
-    <div style="background-color:#008066; padding:15px; border-radius:8px; display:flex; align-items:center;">
-        <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png"
-             style="height:60px; margin-right:20px;">
-        <div>
-            <h2 style="color:white; margin:0;">Alief ISD Teacher Profile Tool</h2>
-            <p style="color:white; margin:0;">Determine your TIA Teacher Type</p>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
+# ✅ SAFE HEADER (NO HTML BREAKAGE)
+st.image(
+    "https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png",
+    width=180
 )
 
-st.markdown("---")
+st.title("Alief ISD Teacher Profile Tool")
+st.subheader("Determine your TIA Teacher Type")
 
-# -----------------------------------
-# ✅ STYLING
-# -----------------------------------
-st.markdown("""
-<style>
-.stButton>button {
-    background-color: #008066;
-    color: white;
-    font-weight: bold;
-    border-radius: 8px;
-}
-.stButton>button:hover {
-    background-color: #006655;
-}
-</style>
-""", unsafe_allow_html=True)
+st.markdown("---")
 
 pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
 
 # -----------------------------------
-# INFO
+# TEACHER INFO
 # -----------------------------------
 name = st.text_input("Enter your name")
 campus = st.text_input("Enter your campus")
@@ -57,6 +32,9 @@ campus_type = st.radio(
     ["Early Learning Center", "Elementary", "Intermediate", "Middle School", "High School"]
 )
 
+# -----------------------------------
+# ELC
+# -----------------------------------
 if campus_type == "Early Learning Center":
     pk_self = st.radio("Are you a PK Self-Contained teacher?", ["Yes", "No"])
 
@@ -73,17 +51,27 @@ else:
 
     assignment = st.radio(
         "Assignment",
-        ["Math","RLA / Reading","Science","Social Studies","PE","Special Education / Specialized Program"]
+        [
+            "Math",
+            "RLA / Reading",
+            "Science",
+            "Social Studies",
+            "PE",
+            "Special Education / Specialized Program"
+        ]
     )
 
     teaches_algebra1 = None
     if assignment == "Math" and campus_type in ["Middle School","High School"]:
-        teaches_algebra1 = st.radio("Teach Algebra I?", ["Yes","No"])
+        teaches_algebra1 = st.radio(
+            "Do you teach Algebra I (STAAR EOC)?",
+            ["Yes","No"]
+        )
 
     teaches_eoc = None
     if campus_type == "High School" and assignment in ["Science","RLA / Reading","Social Studies"]:
         teaches_eoc = st.radio(
-            "Teach EOC course?",
+            "Do you teach any STAAR EOC courses?",
             ["Biology","English I","English II","U.S. History","None"]
         )
 
@@ -100,20 +88,18 @@ if st.button("Show My Result"):
         result_type = "Unknown"
 
         if campus_type == "Early Learning Center":
-            if pk_self == "Yes":
-                result_type = "1"
-            else:
-                result_type = "12"
+            result_type = "1" if pk_self == "Yes" else "12"
 
         else:
 
-            # ✅ TYPE 8
             if teaches_algebra1 == "Yes":
                 result_type = "8"
 
             elif assignment == "Science":
                 if "5" in grades or "8" in grades:
-                    result_           result_type = "9"
+                    result_type = "8"
+                else:
+                    result_type = "9"
 
             elif assignment == "Social Studies":
                 if "8" in grades:
@@ -124,14 +110,12 @@ if st.button("Show My Result"):
             elif teaches_eoc is not None and teaches_eoc != "None":
                 result_type = "8"
 
-            # ✅ TYPE 6 / 7
             elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
                 result_type = "6"
 
             elif assignment == "RLA / Reading" and any(g in ["3","4","5","6","7","8"] for g in grades):
                 result_type = "7"
 
-            # ✅ TYPE 9 fallback
             elif campus_type == "High School":
                 result_type = "9"
 
@@ -144,22 +128,20 @@ if st.button("Show My Result"):
             else:
                 result_type = "11"
 
-        # DISPLAY
+        # ✅ DISPLAY BOXES
         st.success(f"You are TIA Teacher Type {result_type}")
 
         st.markdown("### Description")
-        st.info("See official document for full description.")
+        st.info("Refer to the official document for full description.")
 
         st.markdown("### TIA Assessments")
-        st.info("See official document for assessment details.")
+        st.info("Refer to the official document for assessment details.")
 
         st.markdown("### Student Perception Survey")
-        st.info("Refer to document for survey details.")
+
+        if result_type in ["5","6","7","8","9","10","11"]:
+            st.info("This teacher type DOES include a student perception survey.")
+        else:
+            st.info("This teacher type does NOT include a student perception survey.")
 
         st.markdown(pdf_link)
-
-        pd.DataFrame([{
-            "Name": name,
-            "Campus": campus,
-            "Teacher Type": result_type
-        }]).to_csv("teacher_results.csv", mode="a", header=False, index=False)
