@@ -25,17 +25,14 @@ campus_type = st.radio(
 )
 
 # -----------------------------------
-# ELC LOGIC
+# ELC
 # -----------------------------------
 if campus_type == "Early Learning Center":
-    pk_self = st.radio(
-        "Are you a general education PK Self-Contained teacher?",
-        ["Yes", "No"]
-    )
+    pk_self = st.radio("Are you a general education PK Self-Contained teacher?", ["Yes", "No"])
 
 else:
 
-    # Grade
+    # Grade selection
     if campus_type == "Elementary":
         grade = st.selectbox("Grade:", ["K","1","2","3","4"])
     elif campus_type == "Intermediate":
@@ -66,10 +63,9 @@ else:
     )
 
     # -----------------------------------
-    # ICS LOGIC
+    # ICS
     # -----------------------------------
     if assignment == "In-Class Support":
-
         support_content = st.multiselect(
             "What content areas do you support?",
             [
@@ -81,55 +77,45 @@ else:
                 "Other"
             ]
         )
-
         support_grades = st.multiselect(
             "What grade levels do you support?",
             ["K-2","3-4","5","6","7","8","High School"]
         )
 
     # -----------------------------------
-    # INTERVENTIONIST LOGIC
+    # Interventionist
     # -----------------------------------
     if assignment == "Interventionist":
-
-        intervention_type = st.radio(
-            "Are you an ELD Interventionist?",
-            ["Yes", "No"]
-        )
-
+        intervention_type = st.radio("Are you an ELD Interventionist?", ["Yes", "No"])
         if intervention_type == "No":
             support_content = st.multiselect(
                 "What content areas do you support?",
-                ["Math", "RLA", "Science", "Social Studies", "Other"]
+                ["Math","RLA","Science","Social Studies","Other"]
             )
-
             support_grades = st.multiselect(
                 "What grade levels do you support?",
                 ["3-4","5","6","7","8","High School"]
             )
 
     # -----------------------------------
-    # ✅ ALGEBRA I (Math only)
+    # Algebra I
     # -----------------------------------
     teaches_algebra1 = None
     if assignment == "Math" and campus_type in ["Middle School", "High School"]:
-        teaches_algebra1 = st.radio(
-            "Do you teach Algebra I (STAAR EOC course)?",
-            ["Yes", "No"]
-        )
+        teaches_algebra1 = st.radio("Do you teach Algebra I (STAAR EOC course)?", ["Yes","No"])
 
     # -----------------------------------
-    # ✅ EOC (HS core non-math)
+    # EOC (HS only non-math)
     # -----------------------------------
     teaches_eoc = None
-    if campus_type == "High School" and assignment in ["Science", "RLA / Reading", "Social Studies"]:
+    if campus_type == "High School" and assignment in ["Science","RLA / Reading","Social Studies"]:
         teaches_eoc = st.radio(
             "Do you teach any STAAR EOC courses?",
-            ["Biology", "English I", "English II", "U.S. History", "None of these"]
+            ["Biology","English I","English II","U.S. History","None of these"]
         )
 
 # -----------------------------------
-# FINAL RESULT
+# RESULT
 # -----------------------------------
 if st.button("Show My Result"):
 
@@ -139,22 +125,19 @@ if st.button("Show My Result"):
 
         result_type = "Unknown"
 
-        # ✅ ELC
+        # ELC
         if campus_type == "Early Learning Center":
             result_type = "1" if pk_self == "Yes" else "12"
 
         else:
 
-            # ✅ ICS
+            # ICS
             if assignment == "In-Class Support":
-
-                sped_option = "Special Education / Program (Read 180, REACH, LIFE, TLC)"
-
-                if len(support_content) == 1 and sped_option in support_content:
+                sped = "Special Education / Program (Read 180, REACH, LIFE, TLC)"
+                if len(support_content) == 1 and sped in support_content:
                     result_type = "12"
-
                 else:
-                    filtered = [c for c in support_content if c != sped_option]
+                    filtered = [c for c in support_content if c != sped]
 
                     if ("Math" in filtered or "RLA" in filtered) and any(g in support_grades for g in ["3-4","5","6","7","8"]):
                         result_type = "8"
@@ -171,28 +154,24 @@ if st.button("Show My Result"):
                     else:
                         result_type = "11"
 
-            # ✅ INTERVENTIONIST
+            # Interventionist
             elif assignment == "Interventionist":
-
                 if intervention_type == "Yes":
                     result_type = "7"
-
                 else:
                     if ("Math" in support_content or "RLA" in support_content) and any(g in support_grades for g in ["3-4","5","6","7","8"]):
                         result_type = "8"
-
                     elif "High School" in support_grades:
                         result_type = "9"
-
                     else:
                         result_type = "11"
 
-            # ✅ DYSLEXIA
+            # Dyslexia
             elif assignment == "Dyslexia Teacher":
                 result_type = "4" if grade in ["K","1","2"] else "7"
 
             # -----------------------------------
-            # ✅ TYPE 8 (STRICT PRIORITY)
+            # TYPE 8 PRIORITY
             # -----------------------------------
             elif teaches_algebra1 == "Yes":
                 result_type = "8"
@@ -210,7 +189,7 @@ if st.button("Show My Result"):
                 result_type = "8"
 
             # -----------------------------------
-            # ✅ TYPE 6 / 7
+            # TYPE 6 / 7
             # -----------------------------------
             elif assignment == "Math" and grade in ["3","4","5","6","7","8"]:
                 result_type = "6"
@@ -219,14 +198,20 @@ if st.button("Show My Result"):
                 result_type = "7"
 
             # -----------------------------------
-            # ✅ TYPE 9 (HS NON-EOC)
+            # ✅ MIDDLE SCHOOL NON-STAAR
+            # -----------------------------------
+            elif assignment == "Science" and grade in ["6","7"]:
+                result_type = "9"
+
+            elif assignment == "Social Studies" and grade == "7":
+                result_type = "9"
+
+            # -----------------------------------
+            # HS NON-EOC
             # -----------------------------------
             elif campus_type == "High School":
                 result_type = "9"
 
-            # -----------------------------------
-            # ✅ TYPE 10–12
-            # -----------------------------------
             elif assignment == "PE":
                 result_type = "10"
 
@@ -236,9 +221,9 @@ if st.button("Show My Result"):
             else:
                 result_type = "11"
 
-        # -------------------------------
+        # -----------------------------------
         # DESCRIPTIONS
-        # -------------------------------
+        # -----------------------------------
         descriptions = {
             "1": "PK Self-Contained General Education Teachers.",
             "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
@@ -254,9 +239,9 @@ if st.button("Show My Result"):
             "12": "Other PK-12 Special Education Teachers (Life, Reach, Read 180), ALC Teachers, ESCE Teachers, or Block ELC Teachers."
         }
 
-        # -------------------------------
+        # -----------------------------------
         # ASSESSMENTS
-        # -------------------------------
+        # -----------------------------------
         assessments = {
             "1": "Circle",
             "2": "Amplify mClass-RLA, iReady-Math",
@@ -272,15 +257,13 @@ if st.button("Show My Result"):
             "12": "SLO"
         }
 
-        # ✅ STUDENT SURVEY
+        # Student Survey
         if result_type in ["5","6","7","8","9","10","11"]:
             survey = "This teacher type does include a student perception survey for students in grades 3-12."
         else:
             survey = "This teacher type does not include a student perception survey."
 
-        # -----------------------------------
         # DISPLAY
-        # -----------------------------------
         st.success(f"You are TIA Teacher Type {result_type}")
 
         st.markdown("### Description")
