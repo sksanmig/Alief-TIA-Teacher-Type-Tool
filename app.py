@@ -150,3 +150,83 @@ with center:
                 elif assignment == "Science":
                     result_type = "8" if ("5" in grades or "8" in grades) else "9"
 
+                elif assignment == "Social Studies":
+                    result_type = "8" if "8" in grades else "9"
+
+                elif teaches_eoc is not None and teaches_eoc != "None "8"
+
+                elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
+                    result_type = "6"
+
+                elif assignment == "RLA / Reading" and any(g in ["3","4","5","6","7","8"] for g in grades):
+                    result_type = "7"
+
+                elif campus_type == "High School":
+                    result_type = "9"
+
+                elif assignment == "PE":
+                    result_type = "10"
+
+                elif assignment == "Special Education / Specialized Program":
+                    result_type = "12"
+
+                else:
+                    result_type = "11"
+
+            # -----------------------------------
+            # ✅ DESCRIPTIONS
+            # -----------------------------------
+            descriptions = {
+                "1": "PK Self-Contained General Education Teachers.",
+                "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
+                "5": "3-5 Self-Contained General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
+                "6": "3-8 Math, Math/Science General Education Teachers. This type includes a student perception survey.",
+                "7": "3-8 RLA, RLA/Social Studies General Education Teachers. This type includes a student perception survey.",
+                "8": "STAAR-tested teachers including grades 5/8 Science, 8th Social Studies, and EOC courses.",
+                "9": "TEKSReady-supported teachers for non-STAAR courses.",
+                "10": "K-12 Physical Education Teachers.",
+                "11": "SLO elective teachers.",
+                "12": "Special Programs teachers."
+            }
+
+            # -----------------------------------
+            # ✅ ASSESSMENTS
+            # -----------------------------------
+            assessments = {
+                "1": "Circle",
+                "2": "Amplify mClass-RLA, iReady-Math",
+                "5": "iReady Reading, iReady Math, STAAR VAM",
+                "6": "iReady Math, STAAR VAM",
+                "7": "iReady Reading, STAAR VAM",
+                "8": "SLOs, STAAR VAM",
+                "9": "TEKSReady Pre/Post-Test, SLO",
+                "10": "FitnessGram, SLO",
+                "11": "SLO",
+                "12": "SLO"
+            }
+
+            # -----------------------------------
+            # ✅ SURVEY
+            # -----------------------------------
+            survey = (
+                "This teacher type DOES include a student perception survey for students in grades 3–12."
+                if result_type in ["5","6","7","8","9","10","11"]
+                else "This teacher type does NOT include a student perception survey."
+            )
+
+            # -----------------------------------
+            # ✅ DISPLAY
+            # -----------------------------------
+            st.success(f"You are TIA Teacher Type {result_type}")
+
+            st.markdown("### Description")
+            st.info(descriptions.get(result_type, ""))
+
+            st.markdown("### TIA Assessments")
+            st.info(assessments.get(result_type, ""))
+
+            st.markdown("### Student Perception Survey")
+            st.info(survey)
+
+            # ✅ PDF LINK BACK
+            st.markdown(pdf_link)
