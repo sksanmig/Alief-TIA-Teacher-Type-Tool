@@ -168,3 +168,87 @@ if st.button("Show My Result"):
                 result_type = "8"
 
             # ✅ TYPE 6 / 7
+            elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
+                result_type = "6"
+
+            elif assignment == "RLA / Reading" and any(g in ["3","4","5","6","7","8"] for g in grades):
+                result_type = "7"
+
+            elif campus_type == "High School":
+                result_type = "9"
+
+            elif assignment == "PE":
+                result_type = "10"
+
+            elif assignment == "Special Education / Specialized Program":
+                result_type = "12"
+
+            else:
+                result_type = "11"
+
+        # -----------------------------------
+        # ✅ FULL DESCRIPTIONS
+        # -----------------------------------
+        descriptions = {
+            "1": "PK Self-Contained General Education Teachers.",
+            "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
+            "3": "K-2 Math, Math/Science General Education Teachers and In-Class Support Teachers.",
+            "4": "K-2 RLA, RLA/Social Studies General Education Teachers, In-Class Support Teachers, and Dyslexia Teachers.",
+            "5": "3-5 Self-Contained General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
+            "6": "3-8 Math, Math/Science General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
+            "7": "3-8 RLA, RLA/Social Studies General Education Teachers, In-Class Support Teachers, Dyslexia Teachers, and ELD Interventionist. This type includes a student perception survey.",
+            "8": "5-8 STAAR Science and STAAR Social Studies Teachers, 9-12 STAAR EOC teachers, In-Class Support Teachers, and general Interventionist. This type includes a student perception survey.",
+            "9": "3-12 TEKSReady general education and In-Class Support Teachers of non-STAAR core, Elective, or Block Courses. This type includes a student perception survey.",
+            "10": "K-12 Physical Education Teachers. Student Growth Measures: This type includes a student perception survey.",
+            "11": "3-12 SLO Block and Elective General Education Teachers. This type includes a student perception survey.",
+            "12": "Other PK-12 Special Education Teachers (Life, Reach, Read 180), ALC Teachers, ESCE Teachers, or Block ELC Teachers."
+        }
+
+        # -----------------------------------
+        # ✅ ASSESSMENTS (ONLY)
+        # -----------------------------------
+        assessments = {
+            "1": "Circle",
+            "2": "Amplify mClass-RLA, iReady-Math",
+            "3": "iReady-Math, STEMScopes",
+            "4": "iReady-Reading, Amplify mClass-RLA",
+            "5": "iReady-Math, iReady-Reading, STAAR VAM",
+            "6": "iReady-Math, Teacher STAAR VAM",
+            "7": "iReady-Reading, Teacher STAAR VAM",
+            "8": "SLOs, Teacher STAAR VAM",
+            "9": "SLO, TEKSReady Pre/Post-Test",
+            "10": "SLO, FitnessGram",
+            "11": "SLO",
+            "12": "SLO"
+        }
+
+        # -----------------------------------
+        # ✅ STUDENT SURVEY
+        # -----------------------------------
+        if result_type in ["5","6","7","8","9","10","11"]:
+            survey = "This teacher type does include a student perception survey for students in grades 3-12."
+        else:
+            survey = "This teacher type does not include a student perception survey."
+
+        # -----------------------------------
+        # ✅ DISPLAY
+        # -----------------------------------
+        st.success(f"You are TIA Teacher Type {result_type}")
+
+        st.markdown("### Description")
+        st.info(descriptions.get(result_type, ""))
+
+        st.markdown("### TIA Assessments")
+        st.info(assessments.get(result_type, ""))
+
+        st.markdown("### Student Perception Survey")
+        st.info(survey)
+
+        st.markdown(pdf_link)
+
+        # SAVE
+        pd.DataFrame([{
+            "Name": name,
+            "Campus": campus,
+            "Teacher Type": result_type
+        }]).to_csv("teacher_results.csv", mode="a", header=False, index=False)
