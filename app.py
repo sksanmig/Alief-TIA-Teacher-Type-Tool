@@ -18,14 +18,22 @@ logo_base64 = get_base64("Alief Logo.png")
 # -----------------------------------
 # ✅ TRUE FULL GREEN BANNER (FINAL FIX)
 # -----------------------------------
+import base64
+
+def get_base64(file):
+    with open(file, "rb") as f:
+        return base64.b64encode(f.read()).decode()
+
+logo_base64 = get_base64("Alief Logo.png")
+
 st.markdown(
     f"""
-    <div style="background-color:#008066; padding:20px; margin-bottom:25px;">
+    <div style="background-color:#008066; padding:20px; margin-bottom:20px;">
         <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
-
-            <img src="data:image/png;base64,{logo_base64}"
+        
+            <img src="data:image/png;base64,{logo_base64}" 
                  style="height:75px; margin-right:25px;">
-
+                 
             <div>
                 <div style="color:white; font-size:28px; font-weight:bold;">
                     Alief ISD Teacher Profile Tool
