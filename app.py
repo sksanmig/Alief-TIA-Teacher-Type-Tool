@@ -5,7 +5,7 @@ import pandas as pd
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ HEADER (FULLY FIXED)
+# ✅ HEADER (FINAL FIXED)
 # -----------------------------------
 st.markdown(
     """
@@ -121,7 +121,7 @@ with center:
             )
 
     # -----------------------------------
-    # ✅ RESULT LOGIC (FIXED)
+    # ✅ RESULT LOGIC (FINAL CLEAN)
     # -----------------------------------
     if st.button("Show My Result"):
 
@@ -155,8 +155,7 @@ with center:
                 elif teaches_eoc is not None and teaches_eoc != "None":
                     result_type = "8"
 
-                elif assignment == "Math" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
-                    result_type = "6"
+                elif assignment == "Math" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades      result_type = "6"
 
                 elif assignment == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
                     result_type = "7"
@@ -168,7 +167,10 @@ with center:
                     result_type = "10"
 
                 elif assignment == "Special Education / Specialized Program":
-                    result    result_type = "11"
+                    result_type = "12"
+
+                else:
+                    result_type = "11"
 
             # -----------------------------------
             # ✅ DESCRIPTIONS
@@ -179,7 +181,7 @@ with center:
                 "5": "3-5 Self-Contained General Education Teachers.",
                 "6": "3-8 Math Teachers.",
                 "7": "3-8 RLA Teachers.",
-                "8": "STAAR-tested teachers including EOC.",
+                "8": "STAAR/EOC tested teachers.",
                 "9": "TEKS-supported non-STAAR teachers.",
                 "10": "K-12 Physical Education Teachers.",
                 "11": "SLO elective teachers.",
@@ -191,13 +193,13 @@ with center:
             # -----------------------------------
             assessments = {
                 "1": "Circle",
-                "2": "Amplify mClass, iReady",
-                "5": "iReady + STAAR VAM",
-                "6": "iReady + STAAR VAM",
-                "7": "iReady + STAAR VAM",
-                "8": "SLO + STAAR VAM",
-                "9": "TEKSReady + SLO",
-                "10": "FitnessGram + SLO",
+                "2": "Amplify mClass-RLA, iReady-Math",
+                "5": "iReady Reading, iReady Math, STAAR VAM",
+                "6": "iReady Math, STAAR VAM",
+                "7": "iReady Reading, STAAR VAM",
+                "8": "SLOs, STAAR VAM",
+                "9": "TEKSReady Pre/Post-Test, SLO",
+                "10": "FitnessGram, SLO",
                 "11": "SLO",
                 "12": "SLO"
             }
@@ -215,8 +217,13 @@ with center:
             # ✅ DISPLAY
             # -----------------------------------
             st.success(f"You are TIA Teacher Type {result_type}")
+            st.markdown("### Description")
             st.info(descriptions.get(result_type, ""))
+
+            st.markdown("### TIA Assessments")
             st.info(assessments.get(result_type, ""))
+
+            st.markdown("### Student Perception Survey")
             st.info(survey)
 
             st.markdown(pdf_link)
