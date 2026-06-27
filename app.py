@@ -1,38 +1,48 @@
 import streamlit as st
 import pandas as pd
 
-# ✅ Wide layout for banner
+# ✅ Page setup
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ TRUE GREEN BANNER (FINAL FIX)
+# ✅ BANNER (GREEN + YOUR LOGO USING STREAMLIT)
 # -----------------------------------
-st.markdown(
-    """
-    <div style="background-color:#008066; padding:20px;">
-        <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
+banner = st.container()
+with banner:
+    st.markdown(
+        """
+        <style>
+        .header-banner {
+            background-color: #008066;
+            padding: 20px 0px;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-            <img src="Alief Logo.png" style="height:80px; margin-right:25px;">
+    st.markdown('<div class="header-banner">', unsafe_allow_html=True)
 
-            <div>
-                <div style="color:white; font-size:28px; font-weight:bold;">
-                    Alief ISD Teacher Profile Tool
-                </div>
-                <div style="color:white; font-size:16px;">
-                    Determine your TIA Teacher Type
-                </div>
-            </div>
+    col_left, col_right = st.columns([2, 5])
 
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+    with col_left:
+        st.image("Alief Logo.png", width=260)
+
+    with col_right:
+        st.markdown(
+            """
+            <h2 style='color:white; margin-bottom:0;'>Alief ISD Teacher Profile Tool</h2>
+            <p style='color:white; margin-top:5px;'>Determine your TIA Teacher Type</p>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ✅ PDF LINK
-pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
+pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel/aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
 
 # -----------------------------------
 # ✅ CENTER CONTENT
@@ -50,18 +60,22 @@ with center:
         font-weight: bold;
         border-radius: 8px;
     }
+
     .stButton > button:hover {
         background-color: #006655;
     }
+
     .stTextInput input {
         border: 2px solid #008066 !important;
         border-radius: 6px;
     }
+
     .stRadio > div {
         border: 2px solid #008066;
         padding: 10px;
         border-radius: 8px;
     }
+
     .stMultiSelect > div {
         border: 2px solid #008066;
         border-radius: 6px;
@@ -109,7 +123,7 @@ with center:
         )
 
         teaches_algebra1 = None
-        if assignment == "Math" and campus_type in ["Middle School","High School"]:
+        if assignment == "Math" and campus_type in ["Middle School", "High School"]:
             teaches_algebra1 = st.radio("Teach Algebra I?", ["Yes","No"])
 
         teaches_eoc = None
@@ -120,7 +134,7 @@ with center:
             )
 
     # -----------------------------------
-    # ✅ RESULT LOGIC
+    # RESULT LOGIC
     # -----------------------------------
     if st.button("Show My Result"):
 
@@ -172,15 +186,15 @@ with center:
 
             descriptions = {
                 "1": "PK Self-Contained General Education Teachers.",
-                "2": "K-2 Self-Contained Teachers.",
-                "5": "3-5 Self-Contained Teachers (includes student survey).",
-                "6": "3-8 Math Teachers (includes student survey).",
-                "7": "3-8 RLA Teachers (includes student survey).",
-                "8": "STAAR/EOC Teachers (includes student survey).",
-                "9": "TEKSReady Teachers.",
-                "10": "PE Teachers.",
-                "11": "SLO Teachers.",
-                "12": "Special Program Teachers."
+                "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
+                "5": "3-5 Self-Contained General Education Teachers. Includes student survey.",
+                "6": "3-8 Math Teachers. Includes student survey.",
+                "7": "3-8 RLA Teachers. Includes student survey.",
+                "8": "STAAR/EOC tested teachers. Includes student survey.",
+                "9": "TEKSReady teachers.",
+                "10": "Physical Education teachers.",
+                "11": "SLO elective teachers.",
+                "12": "Special program teachers."
             }
 
             assessments = {
@@ -189,7 +203,8 @@ with center:
                 "5": "iReady + STAAR VAM",
                 "6": "iReady Math + STAAR VAM",
                 "7": "iReady Reading + STAAR VAM",
-            KSReady + SLO",
+                "8": "SLO + STAAR VAM",
+                "9": "TEKSReady + SLO",
                 "10": "FitnessGram + SLO",
                 "11": "SLO",
                 "12": "SLO"
