@@ -1,30 +1,51 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
+st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ HEADER (SAFE)
+# ✅ FULL-WIDTH BANNER HEADER (FIXED)
 # -----------------------------------
-col1, col2 = st.columns([1, 3])
+st.markdown(
+    """
+    <style>
+    .banner {
+        background-color: #008066;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .banner-inner {
+        display: flex;
+        align-items: center;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    .banner-title {
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0;
+    }
+    .banner-subtitle {
+        color: white;
+        margin: 0;
+        font-size: 16px;
+    }
+    </style>
 
-with col1:
-    st.image(
-        "https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png",
-        width=120
-    )
-
-with col2:
-    st.markdown(
-        "<h2 style='color:#008066; margin-bottom:0;'>Alief ISD Teacher Profile Tool</h2>",
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        "<p style='margin-top:0;'>Determine your TIA Teacher Type</p>",
-        unsafe_allow_html=True
-    )
-
-st.markdown("---")
+    <div class="banner">
+        <div class="banner-inner">
+            <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png"
+                 style="height:65px; margin-right:20px;">
+            <div>
+                <p class="banner-title">Alief ISD Teacher Profile Tool</p>
+                <p class="banner-subtitle">Determine your TIA Teacher Type</p>
+            </div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # -----------------------------------
 # ✅ GREEN STYLING
@@ -141,7 +162,7 @@ if st.button("Show My Result"):
 
         else:
 
-            # ✅ SELF-CONTAINED
+            # ✅ SELF-CONTAINED LOGIC
             if assignment == "Self-Contained General Education":
                 if any(g in ["3","4","5"] for g in grades):
                     result_type = "5"
@@ -171,7 +192,7 @@ if st.button("Show My Result"):
             elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
                 result_type = "6"
 
-            elif assignment == "RLA / Reading" and any(g in ["3","4","5","6","7","8"] for g in grades):
+           d any(g in ["3","4","5","6","7","8"] for g in grades):
                 result_type = "7"
 
             elif campus_type == "High School":
@@ -205,7 +226,7 @@ if st.button("Show My Result"):
         }
 
         # -----------------------------------
-        # ✅ ASSESSMENTS (ONLY)
+        # ✅ ASSESSMENTS
         # -----------------------------------
         assessments = {
             "1": "Circle",
@@ -222,9 +243,7 @@ if st.button("Show My Result"):
             "12": "SLO"
         }
 
-        # -----------------------------------
         # ✅ STUDENT SURVEY
-        # -----------------------------------
         if result_type in ["5","6","7","8","9","10","11"]:
             survey = "This teacher type does include a student perception survey for students in grades 3-12."
         else:
