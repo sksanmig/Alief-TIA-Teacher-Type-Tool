@@ -4,7 +4,7 @@ import pandas as pd
 st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 
 # -----------------------------------
-# ✅ SAFE BANNER (STREAMLIT VERSION)
+# HEADER
 # -----------------------------------
 col1, col2 = st.columns([1, 3])
 
@@ -16,7 +16,7 @@ with col1:
 
 with col2:
     st.markdown(
-        "<h2 style='margin-bottom:0; color:#008066;'>Alief ISD Teacher Profile Tool</h2>",
+        "<h2 style='color:#008066; margin-bottom:0;'>Alief ISD Teacher Profile Tool</h2>",
         unsafe_allow_html=True
     )
     st.markdown(
@@ -27,7 +27,7 @@ with col2:
 st.markdown("---")
 
 # -----------------------------------
-# ✅ GREEN STYLING (RESTORED)
+# STYLING
 # -----------------------------------
 st.markdown(
     """
@@ -40,34 +40,20 @@ st.markdown(
         width: 100%;
         font-weight: bold;
     }
-
-    .stButton>button:hover {
-        background-color: #006655;
-    }
-
     .stTextInput input {
         border: 2px solid #008066 !important;
         border-radius: 6px;
     }
-
     .stRadio > div {
         border: 2px solid #008066;
         padding: 10px;
         border-radius: 8px;
-    }
-
-    .stMultiSelect > div {
-        border: 2px solid #008066;
-        border-radius: 6px;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# -----------------------------------
-# LINK
-# -----------------------------------
 pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
 
 # -----------------------------------
@@ -90,6 +76,7 @@ if campus_type == "Early Learning Center":
     pk_self = st.radio("Are you a PK Self-Contained teacher?", ["Yes","No"])
 
 else:
+
     if campus_type == "Elementary":
         grades = st.multiselect("Grades:", ["K","1","2","3","4","5"])
     elif campus_type == "Intermediate":
@@ -101,7 +88,15 @@ else:
 
     assignment = st.radio(
         "Assignment",
-        ["Math","RLA / Reading","Science","Social Studies","PE","Special Education / Specialized Program"]
+        [
+            "Self-Contained General Education",
+            "Math",
+            "RLA / Reading",
+            "Science",
+            "Social Studies",
+            "PE",
+            "Special Education / Specialized Program"
+        ]
     )
 
     teaches_algebra1 = None
@@ -132,7 +127,16 @@ if st.button("Show My Result"):
 
         else:
 
-            if teaches_algebra1 == "Yes":
+            # ✅ SELF-CONTAINED FIX
+            if assignment == "Self-Contained General Education":
+
+                if any(g in ["3","4","5"] for g in grades):
+                    result_type = "5"
+                elif any(g in ["K","1","2"] for g in grades):
+                    result_type = "2"
+
+            # ✅ TYPE 8
+            elif teaches_algebra1 == "Yes":
                 result_type = "8"
 
             elif assignment == "Science":
@@ -150,6 +154,7 @@ if st.button("Show My Result"):
             elif teaches_eoc is not None and teaches_eoc != "None":
                 result_type = "8"
 
+            # ✅ TYPE 6 / 7
             elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
                 result_type = "6"
 
@@ -168,54 +173,20 @@ if st.button("Show My Result"):
             else:
                 result_type = "11"
 
-        # -----------------------------------
-        # DESCRIPTIONS
-        # -----------------------------------
-        descriptions = {
-            "1": "PK Self-Contained General Education Teachers.",
-            "6": "3-8 Math teachers (non-Algebra I). This type includes a student perception survey.",
-            "7": "3-8 RLA teachers and Dyslexia. This type includes a student perception survey.",
-            "8": "STAAR-tested teachers (5th/8th Science, 8th Social Studies, EOC). This type includes a student perception survey.",
-            "9": "TEKSReady-supported courses. This type includes a student perception survey.",
-            "10": "Physical Education teachers. This type includes a student perception survey.",
-            "11": "SLO-based elective teachers. This type includes a student perception survey.",
-            "12": "Special Programs (SPED, ALC, etc.)."
-        }
-
-        assessments = {
-            "1": "Circle",
-            "6": "iReady Math, STAAR VAM",
-            "7": "iReady Reading, STAAR VAM",
-            "8": "SLOs, STAAR VAM",
-            "9": "TEKSReady Pre/Post-Test, SLO",
-            "10": "FitnessGram, SLO",
-            "11": "SLO",
-            "12": "SLO"
-        }
-
-        # Student Survey
-        if result_type in ["5","6","7","8","9","10","11"]:
-            survey = "This teacher type does include a student perception survey for students in grades 3-12."
-        else:
-            survey = "This teacher type does not include a student perception survey."
-
         # DISPLAY
         st.success(f"You are TIA Teacher Type {result_type}")
 
         st.markdown("### Description")
-        st.info(descriptions.get(result_type, ""))
+        st.info("Refer to official document for full description.")
 
         st.markdown("### TIA Assessments")
-        st.info(assessments.get(result_type, ""))
+        st.info("Refer to official document for assessment details.")
 
         st.markdown("### Student Perception Survey")
-        st.info(survey)
+
+        if result_type in ["5","6","7","8","9","10","11"]:
+            st.info("This teacher type does include a student perception survey.")
+        else:
+            st.info("This teacher type does not include a student perception survey.")
 
         st.markdown(pdf_link)
-
-        # SAVE
-        pd.DataFrame([{
-            "Name": name,
-            "Campus": campus,
-            "Teacher Type": result_type
-        }]).to_csv("teacher_results.csv", mode="a", header=False, index=False)
