@@ -1,48 +1,48 @@
 import streamlit as st
 import pandas as pd
+import base64
 
 # ✅ Page setup
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ BANNER (GREEN + YOUR LOGO USING STREAMLIT)
+# ✅ LOAD LOCAL LOGO (REQUIRED FOR HTML)
 # -----------------------------------
-banner = st.container()
-with banner:
-    st.markdown(
-        """
-        <style>
-        .header-banner {
-            background-color: #008066;
-            padding: 20px 0px;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+def get_base64(file):
+    with open(file, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
-    st.markdown('<div class="header-banner">', unsafe_allow_html=True)
+logo_base64 = get_base64("Alief Logo.png")
 
-    col_left, col_right = st.columns([2, 5])
+# -----------------------------------
+# ✅ TRUE FULL GREEN BANNER (FINAL FIX)
+# -----------------------------------
+st.markdown(
+    f"""
+    <div style="background-color:#008066; padding:20px; margin-bottom:25px;">
+        <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
 
-    with col_left:
-        st.image("Alief Logo.png", width=260)
+            <img src="data:image/png;base64,{logo_base64}"
+                 style="height:75px; margin-right:25px;">
 
-    with col_right:
-        st.markdown(
-            """
-            <h2 style='color:white; margin-bottom:0;'>Alief ISD Teacher Profile Tool</h2>
-            <p style='color:white; margin-top:5px;'>Determine your TIA Teacher Type</p>
-            """,
-            unsafe_allow_html=True
-        )
+            <div>
+                <div style="color:white; font-size:28px; font-weight:bold;">
+                    Alief ISD Teacher Profile Tool
+                </div>
+                <div style="color:white; font-size:16px;">
+                    Determine your TIA Teacher Type
+                </div>
+            </div>
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # ✅ PDF LINK
-pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel/aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
+pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com)"
 
 # -----------------------------------
 # ✅ CENTER CONTENT
@@ -51,7 +51,7 @@ left, center, right = st.columns([1, 3, 1])
 
 with center:
 
-    # ✅ Styling
+    # ✅ STYLING
     st.markdown("""
     <style>
     .stButton > button {
@@ -84,7 +84,7 @@ with center:
     """, unsafe_allow_html=True)
 
     # -----------------------------------
-    # INPUTS
+    # ✅ INPUTS
     # -----------------------------------
     name = st.text_input("Enter your name")
     campus = st.text_input("Enter your campus")
@@ -134,7 +134,7 @@ with center:
             )
 
     # -----------------------------------
-    # RESULT LOGIC
+    # ✅ RESULT LOGIC
     # -----------------------------------
     if st.button("Show My Result"):
 
@@ -186,15 +186,15 @@ with center:
 
             descriptions = {
                 "1": "PK Self-Contained General Education Teachers.",
-                "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
-                "5": "3-5 Self-Contained General Education Teachers. Includes student survey.",
-                "6": "3-8 Math Teachers. Includes student survey.",
-                "7": "3-8 RLA Teachers. Includes student survey.",
-                "8": "STAAR/EOC tested teachers. Includes student survey.",
-                "9": "TEKSReady teachers.",
-                "10": "Physical Education teachers.",
-                "11": "SLO elective teachers.",
-                "12": "Special program teachers."
+                "2": "K-2 Self-Contained (SC) General Education Teachers.",
+                "5": "3-5 Self-Contained Teachers (includes student survey).",
+                "6": "3-8 Math Teachers (includes student survey).",
+                "7": "3-8 RLA Teachers (includes student survey).",
+                "8": "STAAR/EOC Teachers (includes student survey).",
+                "9": "TEKSReady Teachers.",
+                "10": "Physical Education Teachers.",
+                "11": "SLO Teachers.",
+                "12": "Special Program Teachers."
             }
 
             assessments = {
