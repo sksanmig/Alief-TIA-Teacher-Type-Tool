@@ -174,3 +174,42 @@ with center:
                 "1": "PK Self-Contained General Education Teachers.",
                 "2": "K-2 Self-Contained Teachers.",
                 "5": "3-5 Self-Contained Teachers (includes student survey).",
+                "6": "3-8 Math Teachers (includes student survey).",
+                "7": "3-8 RLA Teachers (includes student survey).",
+                "8": "STAAR/EOC Teachers (includes student survey).",
+                "9": "TEKSReady Teachers.",
+                "10": "PE Teachers.",
+                "11": "SLO Teachers.",
+                "12": "Special Program Teachers."
+            }
+
+            assessments = {
+                "1": "Circle",
+                "2": "Amplify + iReady",
+                "5": "iReady + STAAR VAM",
+                "6": "iReady Math + STAAR VAM",
+                "7": "iReady Reading + STAAR VAM",
+            KSReady + SLO",
+                "10": "FitnessGram + SLO",
+                "11": "SLO",
+                "12": "SLO"
+            }
+
+            survey = (
+                "Includes student perception survey (Grades 3–12)."
+                if result_type in ["5","6","7","8","9","10","11"]
+                else "Does NOT include a student perception survey."
+            )
+
+            st.success(f"You are TIA Teacher Type {result_type}")
+
+            st.markdown("### Description")
+            st.info(descriptions.get(result_type, ""))
+
+            st.markdown("### TIA Assessments")
+            st.info(assessments.get(result_type, ""))
+
+            st.markdown("### Student Perception Survey")
+            st.info(survey)
+
+            st.markdown(pdf_link)
