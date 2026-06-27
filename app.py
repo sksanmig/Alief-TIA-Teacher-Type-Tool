@@ -1,38 +1,29 @@
 import streamlit as st
 import pandas as pd
 
-# ✅ Keep layout clean and centered
+# ✅ Clean centered layout
 st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 
 # -----------------------------------
-# ✅ FINAL WORKING BANNER (WHITE BOX)
+# ✅ STREAMLIT BANNER (NO HTML)
 # -----------------------------------
-st.markdown(
-    """
-    <div style="background-color:#008066; padding:15px; margin-bottom:20px; border-radius:6px;">
-        <div style="display:flex; align-items:center;">
+with st.container():
+    banner = st.columns([1, 5])
 
-            <div style="background-color:white; padding:8px 16px; border-radius:6px; margin-right:20px;">
-                <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png" style="height:45px;">
-            </div>
+    with banner[0]:
+        st.image(
+            "https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png",
+            width=110
+        )
 
-            <div>
-                <div style="color:white; font-size:22px; font-weight:bold;">
-                    Alief ISD Teacher Profile Tool
-                </div>
-                <div style="color:white; font-size:14px;">
-                    Determine your TIA Teacher Type
-                </div>
-            </div>
+    with banner[1]:
+        st.markdown("## **Alief ISD Teacher Profile Tool**")
+        st.markdown("Determine your TIA Teacher Type")
 
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown("---")
 
 # -----------------------------------
-# ✅ CLEAN STYLING
+# ✅ STYLING (SAFE CSS ONLY)
 # -----------------------------------
 st.markdown(
     """
@@ -88,7 +79,6 @@ if campus_type == "Early Learning Center":
     pk_self = st.radio("Are you a PK Self-Contained teacher?", ["Yes", "No"])
 
 else:
-
     if campus_type == "Elementary":
         grades = st.multiselect("Grades:", ["K","1","2","3","4","5"])
     elif campus_type == "Intermediate":
@@ -116,3 +106,100 @@ else:
         teaches_algebra1 = st.radio("Teach Algebra I?", ["Yes","No"])
 
     teaches_eoc = None
+    if campus_type == "High School" and assignment in ["Science","RLA / Reading","Social Studies"]:
+        teaches_eoc = st.radio(
+            "Teach EOC course?",
+            ["Biology","English I","English II","U.S. History","None"]
+        )
+
+# -----------------------------------
+# ✅ RESULT
+# -----------------------------------
+if st.button("Show My Result"):
+
+    if not name or not campus:
+        st.error("Please complete required fields.")
+    else:
+
+        result_type = "Unknown"
+
+        if campus_type == "Early Learning Center":
+            result_type = "1" if pk_self == "Yes" else "12"
+        else:
+            if assignment == "Self-Contained General Education":
+                if any(g in ["3","4","5"] for g in grades):
+                    result_type = "5"
+                elif any(g in ["K","1","2"] for g in grades):
+                    result_type = "2"
+
+            elif teaches_algebra1 == "Yes":
+                result_type = "8"
+
+            elif assignment == "Science":
+                result_type = "8" if ("5" in grades or "8" in grades) else "9"
+
+            elif assignment == "Social Studies":
+                result_type = "8" if "8" in grades else "9"
+
+            elif teaches_eoc and teaches_eoc != "None":
+                result_type = "8"
+
+            elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
+                result_type = "6"
+
+            elif assignment == "RLA / Reading" and any(g in ["3","4","5","6","7","8"] for g in grades):
+                result_type = "7"
+
+            elif campus_type == "High School":
+                result_type = "9"
+
+            elif assignment == "PE":
+                result_type = "10"
+
+            elif assignment == "Special Education / Specialized Program":
+                result_type = "12"
+
+            else:
+                result_type = "11"
+
+        descriptions = {
+            "1": "PK Self-Contained General Education Teachers.",
+            "2": "K-2 Self-Contained General Education Teachers.",
+            "5": "3-5 Self-Contained General Education Teachers.",
+            "6": "3-8 Math Teachers.",
+            "7": "3-8 RLA Teachers.",
+            "8": "STAAR and EOC Tested Teachers.",
+            "9": "TEKSReady Teachers.",
+            "10": "Physical Education Teachers.",
+            "11": "SLO Teachers.",
+            "12": "Special Program Teachers."
+        }
+
+        assessments = {
+            "1": "Circle",
+            "2": "Amplify + iReady",
+            "5": "iReady + STAAR",
+            "6": "iReady Math + STAAR",
+            "7": "iReady Reading  "SLO + STAAR VAM",
+            "9": "TEKSReady + SLO",
+            "10": "FitnessGram + SLO",
+            "11": "SLO",
+            "12": "SLO"
+        }
+
+        survey = (
+            "Includes student perception survey (Grades 3–12)."
+            if result_type in ["5","6","7","8","9","10","11"]
+            else "Does not include student perception survey."
+        )
+
+        st.success(f"You are TIA Teacher Type {result_type}")
+
+        st.markdown("### Description")
+        st.info(descriptions.get(result_type))
+
+        st.markdown("### TIA Assessments")
+        st.info(assessments.get(result_type))
+
+        st.markdown("### Student Perception Survey")
+        st.info(survey)
