@@ -5,14 +5,16 @@ import pandas as pd
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ GREEN BANNER (FIXED IMG TAG)
+# ✅ GREEN BANNER WITH YOUR LOGO
 # -----------------------------------
 st.markdown(
     """
     <div style="background-color:#008066; padding:20px; margin-bottom:25px;">
         <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
-            <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png"
-                 style="height:70px; margin-right:25px;">
+            
+            <img src="Alief Logo.png"
+                 style="height:75px; margin-right:25px;">
+            
             <div>
                 <div style="color:white; font-size:28px; font-weight:bold;">
                     Alief ISD Teacher Profile Tool
@@ -21,6 +23,7 @@ st.markdown(
                     Determine your TIA Teacher Type
                 </div>
             </div>
+
         </div>
     </div>
     """,
@@ -122,7 +125,7 @@ with center:
             )
 
     # -----------------------------------
-    # ✅ RESULT LOGIC (FULLY FIXED)
+    # ✅ RESULT LOGIC
     # -----------------------------------
     if st.button("Show My Result"):
 
@@ -174,9 +177,7 @@ with center:
                 else:
                     result_type = "11"
 
-            # -----------------------------------
             # ✅ DESCRIPTIONS
-            # -----------------------------------
             descriptions = {
                 "1": "PK Self-Contained General Education Teachers.",
                 "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
@@ -190,9 +191,7 @@ with center:
                 "12": "Special Programs teachers."
             }
 
-            # -----------------------------------
-            # ✅ ASSESSMENTS (FIXED)
-            # -----------------------------------
+            # ✅ ASSESSMENTS
             assessments = {
                 "1": "Circle",
                 "2": "Amplify mClass-RLA, iReady-Math",
@@ -206,18 +205,14 @@ with center:
                 "12": "SLO"
             }
 
-            # -----------------------------------
             # ✅ SURVEY
-            # -----------------------------------
             survey = (
                 "This teacher type DOES include a student perception survey for students in grades 3–12."
                 if result_type in ["5","6","7","8","9","10","11"]
                 else "This teacher type does NOT include a student perception survey."
             )
 
-            # -----------------------------------
             # ✅ DISPLAY
-            # -----------------------------------
             st.success(f"You are TIA Teacher Type {result_type}")
 
             st.markdown("### Description")
@@ -229,5 +224,4 @@ with center:
             st.markdown("### Student Perception Survey")
             st.info(survey)
 
-            # ✅ PDF LINK
             st.markdown(pdf_link)
