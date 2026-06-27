@@ -7,30 +7,28 @@ st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 # -----------------------------------
 # ✅ GREEN BANNER (FIXED IMG TAG)
 # -----------------------------------
-
-
 import base64
 
 with open("Alief Logo.png", "rb") as f:
     encoded = base64.b64encode(f.read()).decode()
 
-# ✅ HEADER (clean, no escaped HTML)
 st.markdown(f"""
 <div style="background-color:#008066; padding:20px; margin-bottom:25px;">
     <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
-        <img src="data:image/png;base64,{encoded}" style="height:100px; margin-right:25px;">
+        <img src="data:image/png;base64,{encoded}" 
+             style="height:70px; margin-right:25px;">
         <div>
-            <div style="color:white; font-size:30px; font-weight:bold;">
+            <div style="color:white; font-size:28px; font-weight:bold;">
                 Alief ISD Teacher Profile Tool
             </div>
-            <div style="color:white; font-size:18px;">
+            <div style="color:white; font-size:16px;">
                 Determine your TIA Teacher Type
             </div>
         </div>
     </div>
 </div>
-""", unsafe_allow_html=True)
-
+""",
+unsafe_allow_html=True)
 
 # ✅ PDF LINK
 pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
@@ -45,36 +43,36 @@ with center:
     # -----------------------------------
     # ✅ STYLING
     # -----------------------------------
-  st.markdown("""
-<style>
-.stButton > button {
-    background-color: #008066;
-    color: white;
-    font-weight: bold;
-    border-radius: 8px;
-}
+    st.markdown("""
+    <style>
+    .stButton > button {
+        background-color: #008066;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+    }
 
-.stButton > button:hover {
-    background-color: #006655;
-}
+    .stButton > button:hover {
+        background-color: #006655;
+    }
 
-.stTextInput input {
-    border: 2px solid #008066 !important;
-    border-radius: 6px;
-}
+    .stTextInput input {
+        border: 2px solid #008066 !important;
+        border-radius: 6px;
+    }
 
-.stRadio > div {
-    border: 2px solid #008066;
-    padding: 10px;
-    border-radius: 8px;
-}
+    .stRadio > div {
+        border: 2px solid #008066;
+        padding: 10px;
+        border-radius: 8px;
+    }
 
-.stMultiSelect > div {
-    border: 2px solid #008066;
-    border-radius: 6px;
-}
-</style>
-""", unsafe_allow_html=True)
+    .stMultiSelect > div {
+        border: 2px solid #008066;
+        border-radius: 6px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     # -----------------------------------
     # ✅ INPUTS
