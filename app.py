@@ -11,7 +11,7 @@ st.markdown(
     """
     <div style="background-color:#008066; padding:20px; margin-bottom:25px;">
         <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
-            <img src="alief-logo.png"
+            <img src="alief logo.png"
                  style="height:70px; margin-right:25px;">
             <div>
                 <div style="color:white; font-size:28px; font-weight:bold;">
