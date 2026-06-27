@@ -1,26 +1,56 @@
 import streamlit as st
 import pandas as pd
 
-# ✅ Centered layout
+# ✅ CENTERED LAYOUT
 st.set_page_config(page_title="Teacher Profile Tool", layout="centered")
 
 # -----------------------------------
-# ✅ WORKING BANNER (FINAL FIX)
+# ✅ WHITE-BOX BANNER (FINAL)
 # -----------------------------------
 st.markdown(
     """
-    <div style="background-color:#008066; padding:15px; margin-bottom:20px; border-radius:6px;">
-        <div style="display:flex; align-items:center;">
-            <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png"
-                 style="height:60px; margin-right:20px;">
+    <div style="
+        background-color:#008066;
+        padding:15px;
+        margin-bottom:20px;
+        border-radius:6px;
+    ">
+        <div style="
+            display:flex;
+            align-items:center;
+        ">
+            
+            <!-- ✅ WHITE BOX FOR LOGO -->
+            <div style="
+                background-color:white;
+                padding:8px 16px;
+                border-radius:6px;
+                margin-right:20px;
+                display:flex;
+                align-items:center;
+            ">
+                <img src="https://cmsv2-assets.apptegy.net/uploads/20164/logo/22855/AliefSmartChoice.png"
+                     style="height:45px;">
+            </div>
+
+            <!-- ✅ TEXT -->
             <div>
-                <div style="color:white; font-size:22px; font-weight:bold;">
+                <div style="
+                    color:white;
+                    font-size:22px;
+                    font-weight:bold;
+                ">
                     Alief ISD Teacher Profile Tool
                 </div>
-                <div style="color:white; font-size:14px;">
+
+                <div style="
+                    color:white;
+                    font-size:14px;
+                ">
                     Determine your TIA Teacher Type
                 </div>
             </div>
+
         </div>
     </div>
     """,
@@ -181,12 +211,12 @@ if st.button("Show My Result"):
             "1": "PK Self-Contained General Education Teachers.",
             "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
             "5": "3-5 Self-Contained General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
-            "6": "3-8 Math teachers. This type includes a student perception survey.",
-            "7": "3-8 RLA teachers. This type includes a student perception survey.",
-            "8": "STAAR-tested teachers (5th/8th Science, 8th SS, and HS EOC). This type includes a student perception survey.",
-            "9": "TEKSReady teachers (non-STAAR). This type includes a student perception survey.",
-            "10": "Physical Education teachers. This type includes a student perception survey.",
-            "11": "SLO elective teachers.",
+            "6": "3-8 Math, Math/Science General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
+            "7": "3-8 RLA, RLA/Social Studies General Education Teachers, Dyslexia Teachers.",
+            "8": "5-8 STAAR Science, 8th Social Studies, and STAAR EOC teachers.",
+            "9": "3-12 TEKSReady teachers of non-STAAR courses.",
+            "10": "K-12 Physical Education teachers.",
+            "11": "3-12 SLO elective teachers.",
             "12": "Special program teachers."
         }
 
@@ -196,7 +226,7 @@ if st.button("Show My Result"):
             "5": "iReady Reading, iReady Math, STAAR VAM",
             "6": "iReady Math, STAAR VAM",
             "7": "iReady Reading, STAAR VAM",
-            "8": "SLOs, Teacher STAAR VAM",
+            "8": "SLOs, STAAR VAM",
             "9": "TEKSReady Pre/Post-Test, SLO",
             "10": "FitnessGram, SLO",
             "11": "SLO",
