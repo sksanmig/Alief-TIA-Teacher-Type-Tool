@@ -1,12 +1,11 @@
 import streamlit as st
-import pandas as pd
 import base64
 
-# ✅ Wide layout
+# ✅ PAGE CONFIG
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ HEADER (FIXED HTML)
+# ✅ HEADER
 # -----------------------------------
 with open("Alief Logo.png", "rb") as f:
     encoded = base64.b64encode(f.read()).decode()
@@ -31,14 +30,14 @@ st.markdown(f"""
 pdf_link = "https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK"
 
 # -----------------------------------
-# ✅ CENTER CONTENT
+# ✅ CENTER LAYOUT
 # -----------------------------------
 left, center, right = st.columns([1, 3, 1])
 
 with center:
 
     # -----------------------------------
-    # ✅ STYLING (FIXED HTML)
+    # ✅ STYLING
     # -----------------------------------
     st.markdown("""
     <style>
@@ -121,7 +120,7 @@ with center:
                 ["Biology","English I","English II","U.S. History","None"]
             )
 
-        # ✅ NEW FOLLOW-UP QUESTION
+        # ✅ FOLLOW-UP LOGIC
         retester_only = None
         if (
             (teaches_eoc is not None and teaches_eoc != "None")
@@ -133,15 +132,13 @@ with center:
             )
 
     # -----------------------------------
-    # ✅ RESULT LOGIC
+    # ✅ RESULT
     # -----------------------------------
     if st.button("Show My Result"):
 
         if not name or not campus:
             st.error("Please complete required fields.")
-
         else:
-
             result_type = "Unknown"
 
             if campus_type == "Early Learning Center":
@@ -156,16 +153,10 @@ with center:
                         result_type = "2"
 
                 elif teaches_algebra1 == "Yes":
-                    if retester_only == "Yes":
-          result_type = "11"
-                    else:
-                        result_type = "8"
+                    result_type = "11" if retester_only == "Yes" else "8"
 
                 elif teaches_eoc is not None and teaches_eoc != "None":
-                    if retester_only == "Yes":
-                        result_type = "11"
-                    else:
-                        result_type = "8"
+                    result_type = "11" if retester_only == "Yes" else "8"
 
                 elif assignment == "Science":
                     result_type = "8" if ("5" in grades or "8" in grades) else "9"
@@ -191,8 +182,50 @@ with center:
                 else:
                     result_type = "11"
 
-            # ✅ OUTPUT
+            # -----------------------------------
+            # ✅ OUTPUT BOXES
+            # -----------------------------------
+            descriptions = {
+                "1": "PK Self-Contained General Education Teachers.",
+                "2": "K-2 Self-Contained General Education Teachers.",
+                "5": "3-5 Self-Contained Teachers.",
+                "6": "3-8 Math Teachers.",
+                "7": "3-8 RLA Teachers.",
+                "8": "STAAR-tested teachers including EOC courses.",
+                "9": "TEKSReady-supported teachers.",
+                "10": "PE Teachers.",
+                "11": "Retesters / SLO teachers.",
+                "12": "Special Programs teachers."
+            }
+
+            assessments = {
+                "1": "Circle",
+                "2": "Amplify, iReady",
+                "5": "iReady + STAAR VAM",
+                "6": "iReady Math + STAAR VAM",
+                "7": "iReady Reading + STAAR VAM",
+                "8": "SLOs + STAAR VAM",
+                "9": "TEKSReady + SLO",
+                "10": "FitnessGram + SLO",
+                "11": "SLO",
+                "12": "SLO"
+            }
+
+            survey = (
+                "Includes a student perception survey."
+                if result_type in ["5","6","7","8","9","10","11"]
+                else "Does NOT include a student perception survey."
+            )
+
             st.success(f"You are TIA Teacher Type {result_type}")
 
-            st.markdown("### TIA Teacher Type Guide")
-            st.link_button("Open Full Guide", pdf_link)
+            st.markdown("### Description")
+            st.info(descriptions.get(result_type,""))
+
+.markdown("### Assessments")
+            st.info(assessments.get(result_type,""))
+
+            st.markdown("### Student Survey")
+            st.info(survey)
+
+            st.link_button("Open Full TIA Teacher Type Guide", pdf_link)
