@@ -6,30 +6,29 @@ import base64
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ HEADER (UNCHANGED - SAFE)
+# ✅ HEADER (FIXED HTML)
 # -----------------------------------
 with open("Alief Logo.png", "rb") as f:
     encoded = base64.b64encode(f.read()).decode()
 
 st.markdown(f"""
-&lt;div style="background-color:#008066; padding:20px; margin-bottom:25px;"&gt;
-    &lt;div style="max-width:1100px; margin:auto; display:flex; align-items:center;"&gt;
-        &lt;img src="data:image/png;base64,{encoded}" 
-             style="height:70px; margin-right:25px;"&gt;
-        &lt;div&gt;
-            &lt;div style="color:white; font-size:28px; font-weight:bold;"&gt;
+<div style="background-color:#008066; padding:20px; margin-bottom:25px;">
+    <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
+        <img src="data:image/png;base64,{encoded}" style="height:70px; margin-right:25px;">
+        <div>
+            <div style="color:white; font-size:28px; font-weight:bold;">
                 Alief ISD Teacher Profile Tool
-            &lt;/div&gt;
-            &lt;div style="color:white; font-size:16px;"&gt;
+            </div>
+            <div style="color:white; font-size:16px;">
                 Determine your TIA Teacher Type
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-&lt;/div&gt;
+            </div>
+        </div>
+    </div>
+</div>
 """, unsafe_allow_html=True)
 
-# ✅ PDF LINK (FIXED)
-pdf_link = "[View Full TIA Teacher Type Guide](https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK)"
+# ✅ PDF LINK
+pdf_link = "https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK"
 
 # -----------------------------------
 # ✅ CENTER CONTENT
@@ -39,18 +38,18 @@ left, center, right = st.columns([1, 3, 1])
 with center:
 
     # -----------------------------------
-    # ✅ STYLING (UNCHANGED SAFE VERSION)
+    # ✅ STYLING (FIXED HTML)
     # -----------------------------------
     st.markdown("""
-    &lt;style&gt;
-    .stButton &gt; button {
+    <style>
+    .stButton > button {
         background-color: #008066;
         color: white;
         font-weight: bold;
         border-radius: 8px;
     }
 
-    .stButton &gt; button:hover {
+    .stButton > button:hover {
         background-color: #006655;
     }
 
@@ -59,17 +58,17 @@ with center:
         border-radius: 6px;
     }
 
-    .stRadio &gt; div {
+    .stRadio > div {
         border: 2px solid #008066;
         padding: 10px;
         border-radius: 8px;
     }
 
-    .stMultiSelect &gt; div {
+    .stMultiSelect > div {
         border: 2px solid #008066;
         border-radius: 6px;
     }
-    &lt;/style&gt;
+    </style>
     """, unsafe_allow_html=True)
 
     # -----------------------------------
@@ -122,7 +121,7 @@ with center:
                 ["Biology","English I","English II","U.S. History","None"]
             )
 
-        # ✅ NEW FOLLOW-UP QUESTION (ONLY FOR EOC / ALG 1)
+        # ✅ NEW FOLLOW-UP QUESTION
         retester_only = None
         if (
             (teaches_eoc is not None and teaches_eoc != "None")
@@ -134,7 +133,7 @@ with center:
             )
 
     # -----------------------------------
-    # ✅ RESULT LOGIC (UPDATED)
+    # ✅ RESULT LOGIC
     # -----------------------------------
     if st.button("Show My Result"):
 
@@ -156,14 +155,12 @@ with center:
                     elif any(g in ["K","1","2"] for g in grades):
                         result_type = "2"
 
-                # ✅ UPDATED ALGEBRA I LOGIC
                 elif teaches_algebra1 == "Yes":
                     if retester_only == "Yes":
-                        result_type = "11"
+          result_type = "11"
                     else:
                         result_type = "8"
 
-                # ✅ UPDATED EOC LOGIC
                 elif teaches_eoc is not None and teaches_eoc != "None":
                     if retester_only == "Yes":
                         result_type = "11"
@@ -194,45 +191,8 @@ with center:
                 else:
                     result_type = "11"
 
-            # -----------------------------------
-            # ✅ DESCRIPTIONS
-            # -----------------------------------
-            descriptions = {
-                "1": "PK Self-Contained General Education Teachers.",
-                "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
-                "5": "3-5 Self-Contained General Education Teachers and In-Class Support Teachers.",
-                "6": "3-8 Math Teachers.",
-                "7": "3-8 RLA Teachers.",
-                "8": "STAAR-tested teachers including EOC courses.",
-                "9": "TEKSReady-supported teachers for non-STAAR courses.",
-                "10": "K-12 Physical Education Teachers.",
-                "11": "SLO / retester-focused teachers.",
-                "12": "Special Programs teachers."
-            }
-
-            assessments = {
-                "1": "Circle",
-                "2": "Amplify mClass-RLA, iReady-Math",
-                "5": "iReady Reading, iReady Math, STAAR VAM",
-                "6": "iReady Math, STAAR VAM",
-                "7": "iReady Reading, STAAR VAM",
-                "8": "SLOs, STAAR VAM",
-                "9": "TEKSReady Pre/Post-Test, SLO",
-                "10": "FitnessGram, SLO",
-                "11": "SLO",
-                "12": "SLO"
-            }
-
-            survey = (
-                "This teacher type DOES include a student perception survey."
-                if result_type in ["5","6","7","8","9","10","11"]
-                else "This teacher type does NOT include a student perception survey."
-            )
-
             # ✅ OUTPUT
             st.success(f"You are TIA Teacher Type {result_type}")
-            st.info(descriptions.get(result_type, ""))
-            st.info(assessments.get(result_type, ""))
-            st.info(survey)
 
-            st.markdown(pdf_link)
+            st.markdown("### TIA Teacher Type Guide")
+            st.link_button("Open Full Guide", pdf_link)
