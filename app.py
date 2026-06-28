@@ -2,11 +2,11 @@ import streamlit as st
 import pandas as pd
 import base64
 
-# ✅ Wide layout for banner
+# Wide layout for banner
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ GREEN BANNER WITH LOCAL LOGO
+# GREEN BANNER WITH LOCAL LOGO
 # -----------------------------------
 with open("Alief Logo.png", "rb") as f:
     encoded = base64.b64encode(f.read()).decode()
@@ -14,8 +14,7 @@ with open("Alief Logo.png", "rb") as f:
 st.markdown(f"""
 <div style="background-color:#008066; padding:20px; margin-bottom:25px;">
     <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
-        <img src="data:image/png;base64,{encoded}" 
-             style="height:95px; margin-right:25px;">
+        <img src="data:image/png;base64,{encoded}" style="height:70px; margin-right:25px;">
         <div>
             <div style="color:white; font-size:30px; font-weight:bold;">
                 Alief ISD Teacher Profile Tool
@@ -28,18 +27,18 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ✅ PDF LINK
+# PDF LINK
 pdf_link = "https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK"
 
 # -----------------------------------
-# ✅ CENTER CONTENT
+# CENTER CONTENT
 # -----------------------------------
 left, center, right = st.columns([1, 3, 1])
 
 with center:
 
     # -----------------------------------
-    # ✅ STYLING
+    # STYLING
     # -----------------------------------
     st.markdown("""
     <style>
@@ -73,7 +72,7 @@ with center:
     """, unsafe_allow_html=True)
 
     # -----------------------------------
-    # ✅ INPUTS
+    # INPUTS
     # -----------------------------------
     name = st.text_input("Enter your name")
     campus = st.text_input("Enter your campus")
@@ -132,49 +131,25 @@ with center:
                 ["Biology", "English I", "English II", "U.S. History", "None"]
             )
 
-        # -----------------------------------
-        # ✅ IDENTIFY STAAR / EOC CONDITIONS
-        # -----------------------------------
+        # Identify STAAR / EOC conditions
         is_algebra_eoc = teaches_algebra1 == "Yes"
-
         is_eoc_course = teaches_eoc is not None and teaches_eoc != "None"
-
-        is_staar_science = (
-            assignment == "Science"
-            and ("5" in grades or "8" in grades)
-        )
-
-        is_staar_social_studies = (
-            assignment == "Social Studies"
-            and "8" in grades
-        )
-
-        is_3_8_math = (
-            assignment == "Math"
-            and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
-        )
-
-        is_3_8_rla = (
-            assignment == "RLA / Reading"
-            and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
-        )
-
+        is_staar_science = assignment == "Science" and ("5" in grades or "8" in grades)
+        is_staar_social_studies = assignment == "Social Studies" and "8" in grades
+        is_3_8_math = assignment == "Math" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
+        is_3_8_rla = assignment == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
         is_self_contained = assignment == "Self-Contained General Education"
         is_pe = assignment == "PE"
         is_special_program = assignment == "Special Education / Specialized Program"
 
-        # -----------------------------------
-        # ✅ FOLLOW-UP FOR STAAR EOC / ALGEBRA I
-        # -----------------------------------
- ly = st.radio(
+        # Follow-up for STAAR EOC / Algebra I
+        if is_eoc_course or is_algebra_eoc:
+            retester_only = st.radio(
                 "Do you teach only retesters or students new to the country taking STAAR for the first time?",
                 ["Yes", "No"]
             )
 
-        # -----------------------------------
-        # ✅ TEKSREADY FOLLOW-UP
-        # Ask only when teacher is not already classified by STAAR/EOC/core tested logic
-        # -----------------------------------
+        # TEKSReady follow-up
         should_ask_teksready = (
             not is_self_contained
             and not is_pe
@@ -194,7 +169,7 @@ with center:
             )
 
     # -----------------------------------
-    # ✅ RESULT LOGIC
+    # RESULT LOGIC
     # -----------------------------------
     if st.button("Show My Result"):
 
@@ -214,9 +189,7 @@ with center:
                     elif any(g in ["K", "1", "2"] for g in grades):
                         result_type = "2"
                     else:
-                        result_type = "11"
-
-                elif teaches_algebra1 == "Yes":
+                        result_type =":
                     result_type = "11" if retester_only == "Yes" else "8"
 
                 elif teaches_eoc is not None and teaches_eoc != "None":
@@ -264,7 +237,7 @@ with center:
                     result_type = "11"
 
             # -----------------------------------
-            # ✅ DESCRIPTIONS
+            # DESCRIPTIONS
             # -----------------------------------
             descriptions = {
                 "1": "PK Self-Contained General Education Teachers.",
@@ -280,7 +253,7 @@ with center:
             }
 
             # -----------------------------------
-            # ✅ ASSESSMENTS
+            # ASSESSMENTS
             # -----------------------------------
             assessments = {
                 "1": "Circle",
@@ -296,7 +269,7 @@ with center:
             }
 
             # -----------------------------------
-            # ✅ SURVEY
+            # SURVEY
             # -----------------------------------
             survey = (
                 "This teacher type DOES include a student perception survey for students in grades 3–12."
@@ -305,7 +278,7 @@ with center:
             )
 
             # -----------------------------------
-            # ✅ DISPLAY
+            # DISPLAY
             # -----------------------------------
             st.success(f"You are TIA Teacher Type {result_type}")
 
