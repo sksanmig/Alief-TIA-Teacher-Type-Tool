@@ -10,7 +10,7 @@ st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 # -----------------------------------
 # Load local Alief logo
 # -----------------------------------
-with open("Alief Logo3.png", "rb") as f:
+with open("Alief Logo.png", "rb") as f:
     encoded = base64.b64encode(f.read()).decode()
 
 # -----------------------------------
@@ -257,13 +257,13 @@ with center:
                 "Dyslexia Teacher",
                 "Interventionist",
                 "ALC Teacher",
-                "Other Special Education Teacher (LIFE/REACH/TLC/READ180)"
+                "Special Education Teacher (LIFE/REACH/TLC/READ180/Other)"
             ]
         )
 
         if role == "ALC Teacher":
             auto_result = "Type 12"
-        elif role == "Other Special Education Teacher (LIFE/REACH/TLC/READ180)":
+        elif role == "Special Education Teacher (LIFE/REACH/TLC/READ180/Other)":
             auto_result = "Type 12"
         elif role == "Dyslexia Teacher":
             pass
