@@ -8,26 +8,10 @@ import base64
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# Green banner with local Alief logo
+# Load local Alief logo
 # -----------------------------------
 with open("Alief Logo.png", "rb") as f:
     encoded = base64.b64encode(f.read()).decode()
-
-st.markdown(f"""
-<div style="background-color:#008066; padding:20px; margin-bottom:25px;">
-    <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
-        <img src="data:image/png;base64,{encoded}" style="height:70px; margin-right:25px;">
-        <div>
-            <div style="color:white; font-size:30px; font-weight:bold;">
-                Alief ISD Teacher Profile Tool
-            </div>
-            <div style="color:white; font-size:18px;">
-                Determine your TIA Teacher Type
-            </div>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
 
 # -----------------------------------
 # PDF guide link
@@ -175,6 +159,23 @@ def get_teksready_courses(content_area, grades):
 left, center, right = st.columns([1, 3, 1])
 
 with center:
+    # -----------------------------------
+    # Centered logo and banner
+    # -----------------------------------
+    st.markdown(f"""
+    <div style="text-align:center; margin-bottom:12px;">
+        <img src="data:image/png;base64,{encoded}" style="height:90px;">
+    </div>
+    <div style="background-color:#008066; padding:18px 20px; margin-bottom:25px; border-radius:10px; text-align:center;">
+        <div style="color:white; font-size:30px; font-weight:bold; line-height:1.2;">
+            Alief ISD TIA Teacher Type Determination Tool
+        </div>
+        <div style="color:white; font-size:18px; margin-top:6px;">
+            Determine your TIA Teacher Type
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
     st.markdown("""
     <style>
     .stButton > button {
@@ -256,26 +257,17 @@ with center:
             ]
         )
 
-        # Auto-route ALC teachers without displaying the result early
         if role == "ALC Teacher":
             auto_result = "Type 12"
-
-        # Other Special Education Teachers are Type 12, no additional questions needed
         elif role == "Other Special Education Teacher (LIFE/REACH/TLC/READ180)":
             auto_result = "Type 12"
-
-        # Dyslexia teachers do not need assignment/content area questions
-        # Type 4 for K-2; Type 7 if they teach any grade 3-8
         elif role == "Dyslexia Teacher":
             pass
-
-        # Interventionist ELD follow-up without displaying the result early
         elif role == "Interventionist":
             eld_interventionist = st.radio("Are you an ELD Interventionist?", ["Yes", "No"])
             if eld_interventionist == "Yes":
                 auto_result = "Type 7"
 
-        # Do not ask additional questions if already auto-classified or dyslexia
         if auto_result is None and role != "Dyslexia Teacher":
             if campus_type == "Elementary":
                 assignment_options = [
@@ -310,18 +302,15 @@ with center:
             )
             content_area = normalize_assignment(assignment)
 
-            # In-Class Support logic
             if role == "In-Class Support":
                 support_areas = st.multiselect(
                     "What content areas do you support?",
                     ["K-2 Math", "K-2 RLA", "3-8 Math", "3-8 RLA", "STAAR / EOC Courses", "TEKSReady Courses"]
                 )
 
-            # Algebra I: Math-specific STAAR EOC course
             if content_area == "Math" and campus_type in ["Middle School", "High School"]:
                 teaches_algebra1 = st.radio("Do you teach Algebra I?", ["Yes", "No"])
 
-            # Content-specific STAAR EOC course options
             if campus_type == "High School":
                 if content_area == "Science":
                     teaches_eoc = st.radio("Do you teach a STAAR EOC course?", ["Biology", "None"])
@@ -330,20 +319,17 @@ with center:
                 elif content_area == "Social Studies":
                     teaches_eoc = st.radio("Do you teach a STAAR EOC course?", ["U.S. History", "None"])
 
-            # EOC/Algebra I retester/newcomer follow-up
             if teaches_algebra1 == "Yes" or (teaches_eoc in staar_courses):
                 eoc_retester_only = st.radio(
                     "Do you teach only retesters or students new to the country taking STAAR for the first time?",
                     ["Yes", "No"]
                 )
 
-            # TEKSReady course logic
-            # Math: if not Algebra I, show TEKSReady Math courses when not already K-8 Math.
             if content_area == "Math":
                 if teaches_algebra1 == "No" and not any(g in ["K", "1", "2", "3", "4", "5", "6", "7", "8"] for g in grades):
                     show_teksready = True
 
-            elif content_area in ["RLA / Reading", "Science", "Social Studies", "Fine Arts", "Language other than English (LOTE)", "CTE"]:
+            elif content_area in ["RLA / Reading", "Science", "Social Studies", "Fine Arts", "Foreign Language", "CTE"]:
                 is_eoc = teaches_eoc in staar_courses
                 is_staar_science = content_area == "Science" and any(g in ["5", "8"] for g in grades)
                 is_staar_social_studies = content_area == "Social Studies" and "8" in grades
@@ -380,7 +366,6 @@ with center:
                 if auto_result is not None:
                     result = auto_result
 
-                # Dyslexia: Type 7 if any selected grade is 3-8, otherwise Type 4 for K-2
                 elif role == "Dyslexia Teacher":
                     if any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
                         result = "Type 7"
@@ -392,7 +377,6 @@ with center:
                 elif content_area == "Special Education / Specialized Program":
                     result = "Type 12"
 
-                # In-Class Support rules
                 elif role == "In-Class Support":
                     if "STAAR / EOC Courses" in support_areas:
                         result = "Type 8"
@@ -409,11 +393,9 @@ with center:
                     else:
                         result = "Type 11"
 
-                # Interventionist rules
                 elif role == "Interventionist" and eld_interventionist == "Yes":
                     result = "Type 7"
 
-                # Self-contained / General Education Classroom Teacher / MCT
                 elif content_area == "Self-Contained General Education" or role in ["General Education Classroom Teacher", "MCT (Model Classroom Teacher)"]:
                     if any(g in ["3", "4", "5"] for g in grades):
                         result = "Type 5"
@@ -422,20 +404,15 @@ with center:
                     elif "PK" in grades:
                         result = "Type 1"
                     else:
-                        # If a high school/secondary general education classroom teacher is not self-contained,
-                        # continue through the content rules below by temporarily leaving result unknown.
                         result = "Unknown"
 
-                # Continue if general education classroom teacher/MCT was not classified by self-contained grades
                 if result == "Unknown":
-                    # Algebra I / EOC with retester-newcomer rule
                     if teaches_algebra1 == "Yes":
                         result = "Type 11" if eoc_retester_only == "Yes" else "Type 8"
 
                     elif teaches_eoc in staar_courses:
                         result = "Type 11" if eoc_retester_only == "Yes" else "Type 8"
 
-                    # STAAR Type 8
                     elif "5" in grades and content_area == "Science":
                         result = "Type 8"
 
@@ -445,7 +422,6 @@ with center:
                     elif "8" in grades and content_area == "Social Studies":
                         result = "Type 8"
 
-                    # Type 3 / 4 / 6 / 7
                     elif content_area == "Math" and any(g in ["K", "1", "2"] for g in grades):
                         result = "Type 3"
 
@@ -458,15 +434,12 @@ with center:
                     elif content_area == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
                         result = "Type 7"
 
-                    # Type 9 TEKSReady
                     elif len(selected_teks) > 0:
                         result = "Type 9"
 
-                    # Type 10 PE
                     elif content_area == "PE":
                         result = "Type 10"
 
-                    # Default elective/block
                     else:
                         result = "Type 11"
 
