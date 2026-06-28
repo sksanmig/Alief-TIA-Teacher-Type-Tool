@@ -193,16 +193,16 @@ with center:
                 "Dyslexia Teacher",
                 "Interventionist",
                 "ALC Teacher",
-                "ESCE Teacher",
-                "Life / Reach / Read 180 Teacher",
-                "Block ELC Teacher",
-                "Other Special Education Teacher",
-                "Other"
+                "Other Special Education Teacher (LIFE/REACH/TLC/READ180)"
             ]
         )
 
         # Auto-route ALC teachers without displaying the result early
         if role == "ALC Teacher":
+            auto_result = "Type 12"
+
+        # Other Special Education Teachers are Type 12, no additional questions needed
+        elif role == "Other Special Education Teacher (LIFE/REACH/TLC/READ180)":
             auto_result = "Type 12"
 
         # Interventionist ELD follow-up without displaying the result early
@@ -292,9 +292,6 @@ with center:
             else:
                 if auto_result is not None:
                     result = auto_result
-
-                elif role in ["ESCE Teacher", "Life / Reach / Read 180 Teacher", "Block ELC Teacher", "Other Special Education Teacher"]:
-                    result = "Type 12"
 
                 elif assignment == "Special Education / Specialized Program":
                     result = "Type 12"
