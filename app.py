@@ -160,7 +160,7 @@ with center:
 
     # Defaults
     pk_self = None
-    grade = None
+    grades = []
     role = None
     assignment = None
     support_areas = []
@@ -177,13 +177,13 @@ with center:
 
     else:
         if campus_type == "Elementary":
-            grade = st.selectbox("Grade:", ["K", "1", "2", "3", "4"])
+            grades = st.multiselect("Select the grade level(s) you instruct:", ["K", "1", "2", "3", "4"])
         elif campus_type == "Intermediate":
-            grade = st.selectbox("Grade:", ["5", "6"])
+            grades = st.multiselect("Select the grade level(s) you instruct:", ["5", "6"])
         elif campus_type == "Middle School":
-            grade = st.selectbox("Grade:", ["7", "8"])
+            grades = st.multiselect("Select the grade level(s) you instruct:", ["7", "8"])
         else:
-            grade = st.selectbox("Grade:", ["9", "10", "11", "12"])
+            grades = st.multiselect("Select the grade level(s) you instruct:", ["9", "10", "11", "12"])
 
         role = st.radio(
             "Which best describes your role?",
@@ -255,15 +255,15 @@ with center:
             # TEKSReady course logic
             # Math: if not Algebra I, show TEKSReady Math courses when not already K-8 Math.
             if assignment == "Math":
-                if teaches_algebra1 == "No" and grade not in ["K", "1", "2", "3", "4", "5", "6", "7", "8"]:
+                if teaches_algebra1 == "No" and not any(g in ["K", "1", "2", "3", "4", "5", "6", "7", "8"] for g in grades):
                     show_teksready = True
 
             elif assignment in ["RLA / Reading", "Science", "Social Studies", "Fine Arts", "Foreign Language", "CTE"]:
                 is_eoc = teaches_eoc in staar_courses
-                is_staar_science = assignment == "Science" and grade in ["5", "8"]
-                is_staar_social_studies = assignment == "Social Studies" and grade == "8"
-                is_3_8_rla = assignment == "RLA / Reading" and grade in ["3", "4", "5", "6", "7", "8"]
-                is_k_2_rla = assignment == "RLA / Reading" and grade in ["K", "1", "2"]
+                is_staar_science = assignment == "Science" and any(g in ["5", "8"] for g in grades)
+                is_staar_social_studies = assignment == "Social Studies" and "8" in grades
+                is_3_8_rla = assignment == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
+                is_k_2_rla = assignment == "RLA / Reading" and any(g in ["K", "1", "2"] for g in grades)
 
                 if not is_eoc and not is_staar_science and not is_staar_social_studies and not is_3_8_rla and not is_k_2_rla:
                     show_teksready = True
@@ -281,6 +281,8 @@ with center:
 
         if not name or not campus:
             st.error("Please fill in required fields.")
+        elif campus_type != "Early Learning Center" and len(grades) == 0:
+            st.error("Please select at least one grade level.")
         else:
             result = "Unknown"
 
@@ -320,13 +322,13 @@ with center:
 
                 # Dyslexia
                 elif role == "Dyslexia Teacher":
-                    result = "Type 4" if grade in ["K", "1", "2"] else "Type 7"
+                    result = "Type 4" if any(g in ["K", "1", "2"] for g in grades) else "Type 7"
 
                 # Self-contained / General Education Classroom Teacher
                 elif assignment == "Self-Contained General Education" or role == "General Education Classroom Teacher":
-                    if grade in ["K", "1", "2"]:
+                    if any(g in ["K", "1", "2"] for g in grades):
                         result = "Type 2"
-                    elif grade in ["3", "4", "5"]:
+                    elif any(g in ["3", "4", "5"] for g in grades):
                         result = "Type 5"
                     else:
                         # If a high school/secondary general education classroom teacher is not self-contained,
@@ -343,26 +345,26 @@ with center:
                         result = "Type 11" if eoc_retester_only == "Yes" else "Type 8"
 
                     # STAAR Type 8
-                    elif grade == "5" and assignment == "Science":
+                    elif "5" in grades and assignment == "Science":
                         result = "Type 8"
 
-                    elif grade == "8" and assignment == "Science":
+                    elif "8" in grades and assignment == "Science":
                         result = "Type 8"
 
-                    elif grade == "8" and assignment == "Social Studies":
+                    elif "8" in grades and assignment == "Social Studies":
                         result = "Type 8"
 
                     # Type 3 / 4 / 6 / 7
-                    elif assignment == "Math" and grade in ["K", "1", "2"]:
+                    elif assignment == "Math" and any(g in ["K", "1", "2"] for g in grades):
                         result = "Type 3"
 
-                    elif assignment == "RLA / Reading" and grade in ["K", "1", "2"]:
+                    elif assignment == "RLA / Reading" and any(g in ["K", "1", "2"] for g in grades):
                         result = "Type 4"
 
-                    elif assignment == "Math" and grade in ["3", "4", "5", "6", "7", "8"]:
+                    elif assignment == "Math" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
                         result = "Type 6"
 
-                    elif assignment == "RLA / Reading" and grade in ["3", "4", "5", "6", "7", "8"]:
+                    elif assignment == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
                         result = "Type 7"
 
                     # Type 9 TEKSReady
