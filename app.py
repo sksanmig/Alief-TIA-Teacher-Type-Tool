@@ -170,8 +170,7 @@ with center:
 
     # -----------------------------------
     # RESULT LOGIC
-    # -----------------------------------
-    if st.button("Show My Result"):
+   ton("Show My Result"):
 
         if not name or not campus:
             st.error("Please complete required fields.")
@@ -189,7 +188,9 @@ with center:
                     elif any(g in ["K", "1", "2"] for g in grades):
                         result_type = "2"
                     else:
-                        result_type =":
+                        result_type = "11"
+
+                elif teaches_algebra1 == "Yes":
                     result_type = "11" if retester_only == "Yes" else "8"
 
                 elif teaches_eoc is not None and teaches_eoc != "None":
@@ -236,9 +237,6 @@ with center:
                 else:
                     result_type = "11"
 
-            # -----------------------------------
-            # DESCRIPTIONS
-            # -----------------------------------
             descriptions = {
                 "1": "PK Self-Contained General Education Teachers.",
                 "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
@@ -252,9 +250,6 @@ with center:
                 "12": "Special Programs teachers or teachers not assigned to a currently eligible tested/TEKSReady category."
             }
 
-            # -----------------------------------
-            # ASSESSMENTS
-            # -----------------------------------
             assessments = {
                 "1": "Circle",
                 "2": "Amplify mClass-RLA, iReady-Math",
@@ -268,18 +263,12 @@ with center:
                 "12": "SLO"
             }
 
-            # -----------------------------------
-            # SURVEY
-            # -----------------------------------
             survey = (
                 "This teacher type DOES include a student perception survey for students in grades 3–12."
                 if result_type in ["5", "6", "7", "8", "9", "10", "11"]
                 else "This teacher type does NOT include a student perception survey."
             )
 
-            # -----------------------------------
-            # DISPLAY
-            # -----------------------------------
             st.success(f"You are TIA Teacher Type {result_type}")
 
             st.markdown("### Description")
