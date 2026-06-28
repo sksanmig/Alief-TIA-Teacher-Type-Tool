@@ -113,9 +113,18 @@ base_teks_map = {
 }
 
 
-def get_teksready_courses(assignment, grades):
+def normalize_assignment(assignment_display):
+    """Convert campus-specific labels into the internal content area used by the logic."""
+    if assignment_display in ["Math", "Math or Math/Science"]:
+        return "Math"
+    if assignment_display in ["ELA/RLA", "RLA or RLA/Social Studies", "RLA / Reading"]:
+        return "RLA / Reading"
+    return assignment_display
+
+
+def get_teksready_courses(content_area, grades):
     """Return only TEKSReady courses that align to the selected content area and grade level(s)."""
-    if assignment == "Science":
+    if content_area == "Science":
         courses = []
         if "6" in grades:
             courses.append("Science 6")
@@ -132,7 +141,7 @@ def get_teksready_courses(assignment, grades):
             ])
         return courses
 
-    if assignment == "Social Studies":
+    if content_area == "Social Studies":
         courses = []
         if "7" in grades:
             courses.append("TX History, Gr 7")
@@ -151,7 +160,7 @@ def get_teksready_courses(assignment, grades):
             ])
         return courses
 
-    return base_teks_map.get(assignment, [])
+    return base_teks_map.get(content_area, [])
 
 
 # -----------------------------------
@@ -205,6 +214,7 @@ with center:
     grades = []
     role = None
     assignment = None
+    content_area = None
     support_areas = []
     eld_interventionist = None
     auto_result = None
@@ -261,12 +271,11 @@ with center:
 
         # Do not ask additional questions if already auto-classified or dyslexia
         if auto_result is None and role != "Dyslexia Teacher":
-            assignment = st.radio(
-                "Which best describes your teaching assignment/content area?",
-                [
+            if campus_type == "Elementary":
+                assignment_options = [
                     "Self-Contained General Education",
-                    "Math",
-                    "RLA / Reading",
+                    "Math or Math/Science",
+                    "RLA or RLA/Social Studies",
                     "Science",
                     "Social Studies",
                     "Fine Arts",
@@ -276,7 +285,26 @@ with center:
                     "Special Education / Specialized Program",
                     "Other Elective / Block Course"
                 ]
+            else:
+                assignment_options = [
+                    "Self-Contained General Education",
+                    "Math",
+                    "ELA/RLA",
+                    "Science",
+                    "Social Studies",
+                    "Fine Arts",
+                    "Foreign Language",
+                    "CTE",
+                    "PE",
+                    "Special Education / Specialized Program",
+                    "Other Elective / Block Course"
+                ]
+
+            assignment = st.radio(
+                "Which best describes your teaching assignment/content area?",
+                assignment_options
             )
+            content_area = normalize_assignment(assignment)
 
             # In-Class Support logic
             if role == "In-Class Support":
@@ -286,16 +314,16 @@ with center:
                 )
 
             # Algebra I: Math-specific STAAR EOC course
-            if assignment == "Math" and campus_type in ["Middle School", "High School"]:
+            if content_area == "Math" and campus_type in ["Middle School", "High School"]:
                 teaches_algebra1 = st.radio("Do you teach Algebra I?", ["Yes", "No"])
 
             # Content-specific STAAR EOC course options
             if campus_type == "High School":
-                if assignment == "Science":
+                if content_area == "Science":
                     teaches_eoc = st.radio("Do you teach a STAAR EOC course?", ["Biology", "None"])
-                elif assignment == "RLA / Reading":
+                elif content_area == "RLA / Reading":
                     teaches_eoc = st.radio("Do you teach a STAAR EOC course?", ["English I", "English II", "None"])
-                elif assignment == "Social Studies":
+                elif content_area == "Social Studies":
                     teaches_eoc = st.radio("Do you teach a STAAR EOC course?", ["U.S. History", "None"])
 
             # EOC/Algebra I retester/newcomer follow-up
@@ -307,22 +335,22 @@ with center:
 
             # TEKSReady course logic
             # Math: if not Algebra I, show TEKSReady Math courses when not already K-8 Math.
-            if assignment == "Math":
+            if content_area == "Math":
                 if teaches_algebra1 == "No" and not any(g in ["K", "1", "2", "3", "4", "5", "6", "7", "8"] for g in grades):
                     show_teksready = True
 
-            elif assignment in ["RLA / Reading", "Science", "Social Studies", "Fine Arts", "Foreign Language", "CTE"]:
+            elif content_area in ["RLA / Reading", "Science", "Social Studies", "Fine Arts", "Foreign Language", "CTE"]:
                 is_eoc = teaches_eoc in staar_courses
-                is_staar_science = assignment == "Science" and any(g in ["5", "8"] for g in grades)
-                is_staar_social_studies = assignment == "Social Studies" and "8" in grades
-                is_3_8_rla = assignment == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
-                is_k_2_rla = assignment == "RLA / Reading" and any(g in ["K", "1", "2"] for g in grades)
+                is_staar_science = content_area == "Science" and any(g in ["5", "8"] for g in grades)
+                is_staar_social_studies = content_area == "Social Studies" and "8" in grades
+                is_3_8_rla = content_area == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
+                is_k_2_rla = content_area == "RLA / Reading" and any(g in ["K", "1", "2"] for g in grades)
 
                 if not is_eoc and not is_staar_science and not is_staar_social_studies and not is_3_8_rla and not is_k_2_rla:
                     show_teksready = True
 
             if show_teksready:
-                teksready_options = get_teksready_courses(assignment, grades)
+                teksready_options = get_teksready_courses(content_area, grades)
                 if len(teksready_options) > 0:
                     selected_teks = st.multiselect(
                         "Do you teach any of these courses? Select all that apply.",
@@ -357,7 +385,7 @@ with center:
                     else:
                         result = "Type 11"
 
-                elif assignment == "Special Education / Specialized Program":
+                elif content_area == "Special Education / Specialized Program":
                     result = "Type 12"
 
                 # In-Class Support rules
@@ -382,7 +410,7 @@ with center:
                     result = "Type 7"
 
                 # Self-contained / General Education Classroom Teacher / MCT
-                elif assignment == "Self-Contained General Education" or role in ["General Education Classroom Teacher", "MCT (Model Classroom Teacher)"]:
+                elif content_area == "Self-Contained General Education" or role in ["General Education Classroom Teacher", "MCT (Model Classroom Teacher)"]:
                     if any(g in ["3", "4", "5"] for g in grades):
                         result = "Type 5"
                     elif any(g in ["K", "1", "2"] for g in grades):
@@ -404,26 +432,26 @@ with center:
                         result = "Type 11" if eoc_retester_only == "Yes" else "Type 8"
 
                     # STAAR Type 8
-                    elif "5" in grades and assignment == "Science":
+                    elif "5" in grades and content_area == "Science":
                         result = "Type 8"
 
-                    elif "8" in grades and assignment == "Science":
+                    elif "8" in grades and content_area == "Science":
                         result = "Type 8"
 
-                    elif "8" in grades and assignment == "Social Studies":
+                    elif "8" in grades and content_area == "Social Studies":
                         result = "Type 8"
 
                     # Type 3 / 4 / 6 / 7
-                    elif assignment == "Math" and any(g in ["K", "1", "2"] for g in grades):
+                    elif content_area == "Math" and any(g in ["K", "1", "2"] for g in grades):
                         result = "Type 3"
 
-                    elif assignment == "RLA / Reading" and any(g in ["K", "1", "2"] for g in grades):
+                    elif content_area == "RLA / Reading" and any(g in ["K", "1", "2"] for g in grades):
                         result = "Type 4"
 
-                    elif assignment == "Math" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
+                    elif content_area == "Math" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
                         result = "Type 6"
 
-                    elif assignment == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
+                    elif content_area == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
                         result = "Type 7"
 
                     # Type 9 TEKSReady
@@ -431,7 +459,7 @@ with center:
                         result = "Type 9"
 
                     # Type 10 PE
-                    elif assignment == "PE":
+                    elif content_area == "PE":
                         result = "Type 10"
 
                     # Default elective/block
