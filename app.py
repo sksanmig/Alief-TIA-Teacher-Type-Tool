@@ -17,7 +17,7 @@ st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 # -----------------------------------
 # Load local Alief logo
 # -----------------------------------
-with open("Alief Logo.png", "rb") as f:
+with open("Alief Logo3.png", "rb") as f:
     encoded = base64.b64encode(f.read()).decode()
 
 # -----------------------------------
