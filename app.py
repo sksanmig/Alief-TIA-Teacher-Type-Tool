@@ -231,6 +231,7 @@ with center:
             "Which best describes your role?",
             [
                 "General Education Classroom Teacher",
+                "MCT (Model Classroom Teacher)",
                 "In-Class Support",
                 "Dyslexia Teacher",
                 "Interventionist",
@@ -380,8 +381,8 @@ with center:
                 elif role == "Interventionist" and eld_interventionist == "Yes":
                     result = "Type 7"
 
-                # Self-contained / General Education Classroom Teacher
-                elif assignment == "Self-Contained General Education" or role == "General Education Classroom Teacher":
+                # Self-contained / General Education Classroom Teacher / MCT
+                elif assignment == "Self-Contained General Education" or role in ["General Education Classroom Teacher", "MCT (Model Classroom Teacher)"]:
                     if any(g in ["3", "4", "5"] for g in grades):
                         result = "Type 5"
                     elif any(g in ["K", "1", "2"] for g in grades):
@@ -393,7 +394,7 @@ with center:
                         # continue through the content rules below by temporarily leaving result unknown.
                         result = "Unknown"
 
-                # Continue if general education classroom teacher was not classified by self-contained grades
+                # Continue if general education classroom teacher/MCT was not classified by self-contained grades
                 if result == "Unknown":
                     # Algebra I / EOC with retester-newcomer rule
                     if teaches_algebra1 == "Yes":
