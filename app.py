@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 import base64
 
 # -----------------------------------
@@ -35,6 +36,7 @@ pdf_link = "https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_a
 
 # -----------------------------------
 # TEKSReady course lists by content area
+# Source: Alief 26-27 TIA Teacher Type and Assessment List.pdf
 # -----------------------------------
 TEKSREADY_COURSES = {
     "Math": [
@@ -166,14 +168,34 @@ with center:
     # Defaults so variables always exist
     pk_self = None
     grades = []
-    assignment = None
     teacher_role = None
+    assignment = None
     teaches_algebra1 = None
     teaches_eoc = None
     retester_only = None
     is_eld_interventionist = False
     teksready_courses_selected = []
     should_ask_teksready = False
+
+    # Defaults for logic flags
+    is_self_contained_role = False
+    is_in_class_support = False
+    is_interventionist = False
+    is_dyslexia = False
+    is_alc_or_special_program = False
+    is_algebra_eoc = False
+    is_eoc_course = False
+    is_staar_science = False
+    is_staar_social_studies = False
+    is_3_8_math = False
+    is_3_8_rla = False
+    is_k_2_math = False
+    is_k_2_rla = False
+    is_self_contained_assignment = False
+    is_pe = False
+    is_special_program_assignment = False
+    is_k_2_dyslexia = False
+    is_3_8_dyslexia = False
 
     if campus_type == "Early Learning Center":
         pk_self = st.radio("Are you a PK Self-Contained teacher?", ["Yes", "No"])
@@ -268,7 +290,25 @@ with center:
                 ["Yes", "No"]
             )
 
-        # TEKSReady follow-up with subject-aligned course list
+        # Explicit TEKSReady candidate logic
+        # Math: if they do NOT teach Algebra I and are not K-8 math, show Math TEKSReady list.
+        is_math_teksready_candidate = (
+            assignment == "Math"
+            and teaches_algebra1 == "No"
+            and not is_3_8_math
+            and not is_k_2_math
+        )
+
+        # Other TEKSReady content areas: only if not already classified by STAAR/EOC/K-8 core logic.
+        is_non_math_teksready_candidate = (
+            assignment in ["RLA / Reading", "Science", "Social Studies", "Fine Arts", "World Languages", "CTE"]
+            and not is_eoc_course
+            and not is_staar_science
+            and not is_staar_social_studies
+            and not is_3_8_rla
+            and not is_k_2_rla
+        )
+
         should_ask_teksready = (
             not is_alc_or_special_program
             and not is_self_contained_role
@@ -276,16 +316,10 @@ with center:
             and not is_pe
             and not is_special_program_assignment
             and not is_algebra_eoc
-            and not is_eoc_course
-            and not is_staar_science
-            and not is_staar_social_studies
-            and not is_3_8_math
-            and not is_3_8_rla
-            and not is_k_2_math
-            and not is_k_2_rla
             and not is_k_2_dyslexia
             and not is_3_8_dyslexia
             and not is_eld_interventionist
+            and (is_math_teksready_candidate or is_non_math_teksready_candidate)
             and assignment in TEKSREADY_COURSES
         )
 
