@@ -168,7 +168,7 @@ with center:
         <img src="data:image/png;base64,{encoded}" style="height:90px;">
     </div>
     <div style="background-color:#008066; padding:18px 20px; margin-bottom:25px; border-radius:10px; text-align:center;">
-        <div style="color:white; font-size:30px; font-weight:bold; line-height:1.2;">
+        <div style="color:white; font-size:34px; font-weight:bold; line-height:1.2;">
             TIA Teacher Type Determination Tool
         </div>
     </div>
@@ -176,27 +176,73 @@ with center:
 
     st.markdown("""
     <style>
+    /* Overall readability */
+    html, body, [class*="css"], .stApp {
+        font-size: 20px !important;
+    }
+
+    /* Main text, directions, labels, and help text */
+    p, li, label, .stMarkdown, .stMarkdown p, .stRadio label, .stMultiSelect label, .stTextInput label {
+        font-size: 20px !important;
+        line-height: 1.45 !important;
+    }
+
+    /* Input text */
+    .stTextInput input {
+        border: 2px solid #008066 !important;
+        border-radius: 6px;
+        font-size: 20px !important;
+        min-height: 44px !important;
+    }
+
+    /* Radio groups */
+    .stRadio > div {
+        border: 2px solid #008066;
+        padding: 14px;
+        border-radius: 8px;
+    }
+    .stRadio div[role="radiogroup"] label,
+    .stRadio div[role="radiogroup"] p {
+        font-size: 20px !important;
+        line-height: 1.45 !important;
+    }
+
+    /* Multiselect field and selected chips */
+    .stMultiSelect > div {
+        border: 2px solid #008066;
+        border-radius: 6px;
+        font-size: 20px !important;
+    }
+    .stMultiSelect div, .stMultiSelect span, .stMultiSelect input {
+        font-size: 20px !important;
+    }
+
+    /* Buttons */
     .stButton > button {
         background-color: #008066;
         color: white;
         font-weight: bold;
         border-radius: 8px;
+        font-size: 20px !important;
+        padding: 0.65rem 1.25rem !important;
+        min-height: 46px !important;
     }
     .stButton > button:hover {
         background-color: #006655;
     }
-    .stTextInput input {
-        border: 2px solid #008066 !important;
-        border-radius: 6px;
+
+    /* Result/info boxes */
+    .stAlert, .stAlert p, .stAlert div {
+        font-size: 20px !important;
+        line-height: 1.45 !important;
     }
-    .stRadio > div {
-        border: 2px solid #008066;
-        padding: 10px;
-        border-radius: 8px;
+
+    /* Section headings */
+    h1, h2, h3 {
+        line-height: 1.25 !important;
     }
-    .stMultiSelect > div {
-        border: 2px solid #008066;
-        border-radius: 6px;
+    h3 {
+        font-size: 24px !important;
     }
     </style>
     """, unsafe_allow_html=True)
