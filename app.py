@@ -205,14 +205,19 @@ with center:
         elif role == "Other Special Education Teacher (LIFE/REACH/TLC/READ180)":
             auto_result = "Type 12"
 
+        # Dyslexia teachers do not need assignment/content area questions
+        # Type 4 for K-2; Type 7 if they teach any grade 3-8
+        elif role == "Dyslexia Teacher":
+            pass
+
         # Interventionist ELD follow-up without displaying the result early
         elif role == "Interventionist":
             eld_interventionist = st.radio("Are you an ELD Interventionist?", ["Yes", "No"])
             if eld_interventionist == "Yes":
                 auto_result = "Type 7"
 
-        # Do not ask additional questions if already auto-classified
-        if auto_result is None:
+        # Do not ask additional questions if already auto-classified or dyslexia
+        if auto_result is None and role != "Dyslexia Teacher":
             assignment = st.radio(
                 "Which best describes your teaching assignment/content area?",
                 [
@@ -293,6 +298,15 @@ with center:
                 if auto_result is not None:
                     result = auto_result
 
+                # Dyslexia: Type 7 if any selected grade is 3-8, otherwise Type 4 for K-2
+                elif role == "Dyslexia Teacher":
+                    if any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
+                        result = "Type 7"
+                    elif any(g in ["K", "1", "2"] for g in grades):
+                        result = "Type 4"
+                    else:
+                        result = "Type 11"
+
                 elif assignment == "Special Education / Specialized Program":
                     result = "Type 12"
 
@@ -316,15 +330,6 @@ with center:
                 # Interventionist rules
                 elif role == "Interventionist" and eld_interventionist == "Yes":
                     result = "Type 7"
-
-                # Dyslexia
-                elif role == "Dyslexia Teacher":
-                    if any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
-                        result = "Type 7"
-                    elif any(g in ["K", "1", "2"] for g in grades):
-                        result = "Type 4"
-                    else:
-                        result = "Type 11"
 
                 # Self-contained / General Education Classroom Teacher
                 elif assignment == "Self-Contained General Education" or role == "General Education Classroom Teacher":
