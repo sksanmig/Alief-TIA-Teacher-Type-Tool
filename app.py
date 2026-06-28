@@ -35,7 +35,7 @@ st.markdown(f"""
 pdf_link = "https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK"
 
 # -----------------------------------
-# TEKSReady course lists
+# Assessment / course lists
 # -----------------------------------
 staar_courses = ["Algebra I", "Biology", "English I", "English II", "U.S. History"]
 
@@ -242,13 +242,18 @@ with center:
                     ["K-2 Math", "K-2 RLA", "3-8 Math", "3-8 RLA", "STAAR / EOC Courses", "TEKSReady Courses"]
                 )
 
-            # Algebra I
+            # Algebra I: Math-specific STAAR EOC course
             if assignment == "Math" and campus_type in ["Middle School", "High School"]:
                 teaches_algebra1 = st.radio("Do you teach Algebra I?", ["Yes", "No"])
 
-            # EOC
-            if assignment in ["Science", "Social Studies", "RLA / Reading"] and campus_type == "High School":
-                teaches_eoc = st.radio("Do you teach STAAR EOC courses?", staar_courses + ["None"])
+            # Content-specific STAAR EOC course options
+            if campus_type == "High School":
+                if assignment == "Science":
+                    teaches_eoc = st.radio("Do you teach a STAAR EOC course?", ["Biology", "None"])
+                elif assignment == "RLA / Reading":
+                    teaches_eoc = st.radio("Do you teach a STAAR EOC course?", ["English I", "English II", "None"])
+                elif assignment == "Social Studies":
+                    teaches_eoc = st.radio("Do you teach a STAAR EOC course?", ["U.S. History", "None"])
 
             # EOC/Algebra I retester/newcomer follow-up
             if teaches_algebra1 == "Yes" or (teaches_eoc in staar_courses):
@@ -275,7 +280,7 @@ with center:
 
             if show_teksready and assignment in teks_map:
                 selected_teks = st.multiselect(
-                    "Select TEKSReady courses you teach:",
+                    "Do you teach any of these courses? Select all that apply.",
                     teks_map[assignment]
                 )
 
