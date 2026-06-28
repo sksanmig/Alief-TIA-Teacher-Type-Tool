@@ -121,6 +121,8 @@ def normalize_assignment(assignment_display):
         return "RLA / Reading"
     if assignment_display == "Fine and Performing Arts":
         return "Fine Arts"
+    if assignment_display == "Language other than English (LOTE)":
+        return "Foreign Language"
     return assignment_display
 
 
@@ -281,7 +283,7 @@ with center:
                     "Science",
                     "Social Studies",
                     "Fine and Performing Arts",
-                    "Foreign Language",
+                    "Language other than English (LOTE)",
                     "PE",
                     "Special Education / Specialized Program"
                 ]
@@ -293,7 +295,7 @@ with center:
                     "Science",
                     "Social Studies",
                     "Fine and Performing Arts",
-                    "Foreign Language",
+                    "Language other than English (LOTE)",
                     "CTE",
                     "PE",
                     "Special Education / Specialized Program",
@@ -339,7 +341,7 @@ with center:
                 if teaches_algebra1 == "No" and not any(g in ["K", "1", "2", "3", "4", "5", "6", "7", "8"] for g in grades):
                     show_teksready = True
 
-            elif content_area in ["RLA / Reading", "Science", "Social Studies", "Fine Arts", "Foreign Language", "CTE"]:
+            elif content_area in ["RLA / Reading", "Science", "Social Studies", "Fine Arts", "Language other than English (LOTE)", "CTE"]:
                 is_eoc = teaches_eoc in staar_courses
                 is_staar_science = content_area == "Science" and any(g in ["5", "8"] for g in grades)
                 is_staar_social_studies = content_area == "Social Studies" and "8" in grades
