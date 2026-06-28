@@ -1,11 +1,12 @@
 import streamlit as st
+import pandas as pd
 import base64
 
-# ✅ PAGE CONFIG
+# ✅ Wide layout for banner
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# ✅ HEADER
+# ✅ GREEN BANNER WITH LOCAL LOGO
 # -----------------------------------
 with open("Alief Logo.png", "rb") as f:
     encoded = base64.b64encode(f.read()).decode()
@@ -13,12 +14,13 @@ with open("Alief Logo.png", "rb") as f:
 st.markdown(f"""
 <div style="background-color:#008066; padding:20px; margin-bottom:25px;">
     <div style="max-width:1100px; margin:auto; display:flex; align-items:center;">
-        <img src="data:image/png;base64,{encoded}" style="height:70px; margin-right:25px;">
+        <img src="data:image/png;base64,{encoded}" 
+             style="height:95px; margin-right:25px;">
         <div>
-            <div style="color:white; font-size:28px; font-weight:bold;">
+            <div style="color:white; font-size:30px; font-weight:bold;">
                 Alief ISD Teacher Profile Tool
             </div>
-            <div style="color:white; font-size:16px;">
+            <div style="color:white; font-size:18px;">
                 Determine your TIA Teacher Type
             </div>
         </div>
@@ -26,10 +28,11 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# ✅ PDF LINK
 pdf_link = "https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK"
 
 # -----------------------------------
-# ✅ CENTER LAYOUT
+# ✅ CENTER CONTENT
 # -----------------------------------
 left, center, right = st.columns([1, 3, 1])
 
@@ -82,18 +85,30 @@ with center:
         ["Early Learning Center", "Elementary", "Intermediate", "Middle School", "High School"]
     )
 
+    # Defaults so variables always exist
+    pk_self = None
+    grades = []
+    assignment = None
+    teaches_algebra1 = None
+    teaches_eoc = None
+    retester_only = None
+    teksready_teacher = None
+
     if campus_type == "Early Learning Center":
-        pk_self = st.radio("Are you a PK Self-Contained teacher?", ["Yes","No"])
+        pk_self = st.radio(
+            "Are you a PK Self-Contained teacher?",
+            ["Yes", "No"]
+        )
 
     else:
         if campus_type == "Elementary":
-            grades = st.multiselect("Grades:", ["K","1","2","3","4","5"])
+            grades = st.multiselect("Grades:", ["K", "1", "2", "3", "4", "5"])
         elif campus_type == "Intermediate":
-            grades = st.multiselect("Grades:", ["5","6"])
+            grades = st.multiselect("Grades:", ["5", "6"])
         elif campus_type == "Middle School":
-            grades = st.multiselect("Grades:", ["6","7","8"])
+            grades = st.multiselect("Grades:", ["6", "7", "8"])
         else:
-            grades = st.multiselect("Grades:", ["9","10","11","12"])
+            grades = st.multiselect("Grades:", ["9", "10", "11", "12"])
 
         assignment = st.radio(
             "Assignment",
@@ -108,41 +123,78 @@ with center:
             ]
         )
 
-        teaches_algebra1 = None
-        if assignment == "Math" and campus_type in ["Middle School","High School"]:
-            teaches_algebra1 = st.radio("Teach Algebra I?", ["Yes","No"])
+        if assignment == "Math" and campus_type in ["Middle School", "High School"]:
+            teaches_algebra1 = st.radio("Teach Algebra I?", ["Yes", "No"])
 
-        teaches_eoc = None
-        if campus_type == "High School" and assignment in ["Science","RLA / Reading","Social Studies"]:
+        if campus_type == "High School" and assignment in ["Science", "RLA / Reading", "Social Studies"]:
             teaches_eoc = st.radio(
                 "Teach EOC course?",
-                ["Biology","English I","English II","U.S. History","None"]
+                ["Biology", "English I", "English II", "U.S. History", "None"]
             )
 
-        # ✅ EOC FOLLOW-UP
-        retester_only = None
-        if (
-            (teaches_eoc is not None and teaches_eoc != "None")
-            or teaches_algebra1 == "Yes"
-        ):
-            retester_only = st.radio(
+        # -----------------------------------
+        # ✅ IDENTIFY STAAR / EOC CONDITIONS
+        # -----------------------------------
+        is_algebra_eoc = teaches_algebra1 == "Yes"
+
+        is_eoc_course = teaches_eoc is not None and teaches_eoc != "None"
+
+        is_staar_science = (
+            assignment == "Science"
+            and ("5" in grades or "8" in grades)
+        )
+
+        is_staar_social_studies = (
+            assignment == "Social Studies"
+            and "8" in grades
+        )
+
+        is_3_8_math = (
+            assignment == "Math"
+            and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
+        )
+
+        is_3_8_rla = (
+            assignment == "RLA / Reading"
+            and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
+        )
+
+        is_self_contained = assignment == "Self-Contained General Education"
+        is_pe = assignment == "PE"
+        is_special_program = assignment == "Special Education / Specialized Program"
+
+        # -----------------------------------
+        # ✅ FOLLOW-UP FOR STAAR EOC / ALGEBRA I
+        # -----------------------------------
+ ly = st.radio(
                 "Do you teach only retesters or students new to the country taking STAAR for the first time?",
-                ["Yes","No"]
+                ["Yes", "No"]
             )
 
+        # -----------------------------------
         # ✅ TEKSREADY FOLLOW-UP
-        teksready_teacher = None
-        if (
-            (teaches_eoc is None or teaches_eoc == "None")
-            and teaches_algebra1 != "Yes"
-        ):
+        # Ask only when teacher is not already classified by STAAR/EOC/core tested logic
+        # -----------------------------------
+        should_ask_teksready = (
+            not is_self_contained
+            and not is_pe
+            and not is_special_program
+            and not is_algebra_eoc
+            and not is_eoc_course
+            and not is_staar_science
+            and not is_staar_social_studies
+            and not is_3_8_math
+            and not is_3_8_rla
+        )
+
+        if should_ask_teksready:
             teksready_teacher = st.radio(
                 "Do you teach any TEKSReady-supported courses?",
-                ["Yes","No"]
+                ["Yes", "No"]
             )
 
     # -----------------------------------
-    # ✅ RESULT
+    # ✅ RESULT LOGIC
     # -----------------------------------
     if st.button("Show My Result"):
 
@@ -157,33 +209,44 @@ with center:
 
             else:
                 if assignment == "Self-Contained General Education":
-                    if any(g in ["3","4","5"] for g in grades):
+                    if any(g in ["3", "4", "5"] for g in grades):
                         result_type = "5"
-                    elif any(g in ["K","1","2"] for g in grades):
+                    elif any(g in ["K", "1", "2"] for g in grades):
                         result_type = "2"
+                    else:
+                        result_type = "11"
 
                 elif teaches_algebra1 == "Yes":
                     result_type = "11" if retester_only == "Yes" else "8"
 
                 elif teaches_eoc is not None and teaches_eoc != "None":
-                    result_            elif assignment == "Science":
-                    result_type = "8" if ("5" in grades or "8" in grades) else "9"
+                    result_type = "11" if retester_only == "Yes" else "8"
+
+                elif assignment == "Science":
+                    if "5" in grades or "8" in grades:
+                        result_type = "8"
+                    elif teksready_teacher == "Yes":
+                        result_type = "9"
+                    elif teksready_teacher == "No":
+                        result_type = "12"
+                    else:
+                        result_type = "11"
 
                 elif assignment == "Social Studies":
-                    result_type = "8" if "8" in grades else "9"
+                    if "8" in grades:
+                        result_type = "8"
+                    elif teksready_teacher == "Yes":
+                        result_type = "9"
+                    elif teksready_teacher == "No":
+                        result_type = "12"
+                    else:
+                        result_type = "11"
 
-                elif assignment == "Math" and any(g in ["3","4","5","6","7","8"] for g in grades):
+                elif assignment == "Math" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
                     result_type = "6"
 
-                elif assignment == "RLA / Reading" and any(g in ["3","4","5","6","7","8"] for g in grades):
+                elif assignment == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
                     result_type = "7"
-
-                # ✅ TEKSREADY LOGIC (RESTORED)
-                elif teksready_teacher == "Yes":
-                    result_type = "9"
-
-                elif teksready_teacher == "No":
-                    result_type = "12"
 
                 elif assignment == "PE":
                     result_type = "10"
@@ -191,53 +254,83 @@ with center:
                 elif assignment == "Special Education / Specialized Program":
                     result_type = "12"
 
+                elif teksready_teacher == "Yes":
+                    result_type = "9"
+
+                elif teksready_teacher == "No":
+                    result_type = "12"
+
                 else:
                     result_type = "11"
 
             # -----------------------------------
-            # ✅ OUTPUT BOXES
+            # ✅ DESCRIPTIONS
             # -----------------------------------
             descriptions = {
                 "1": "PK Self-Contained General Education Teachers.",
-                "2": "K-2 Self-Contained General Education Teachers.",
-                "5": "3-5 Self-Contained Teachers.",
-                "6": "3-8 Math Teachers.",
-                "7": "3-8 RLA Teachers.",
-                "8": "STAAR-tested teachers including EOC courses.",
-                "9": "TEKSReady-supported teachers.",
-                "10": "PE Teachers.",
-                "11": "Retesters / SLO teachers.",
-                "12": "Special Programs teachers."
+                "2": "K-2 Self-Contained (SC) General Education Teachers and In-Class Support Teachers.",
+                "5": "3-5 Self-Contained General Education Teachers and In-Class Support Teachers. This type includes a student perception survey.",
+                "6": "3-8 Math, Math/Science General Education Teachers. This type includes a student perception survey.",
+                "7": "3-8 RLA, RLA/Social Studies General Education Teachers. This type includes a student perception survey.",
+                "8": "STAAR-tested teachers including grades 5/8 Science, 8th Social Studies, and EOC courses.",
+                "9": "TEKSReady-supported teachers for non-STAAR courses.",
+                "10": "K-12 Physical Education Teachers.",
+                "11": "SLO elective teachers or teachers of only STAAR retesters/newcomers taking STAAR for the first time.",
+                "12": "Special Programs teachers or teachers not assigned to a currently eligible tested/TEKSReady category."
             }
 
+            # -----------------------------------
+            # ✅ ASSESSMENTS
+            # -----------------------------------
             assessments = {
                 "1": "Circle",
-                "2": "Amplify, iReady",
-                "5": "iReady + STAAR VAM",
-                "6": "iReady Math + STAAR VAM",
-                "7": "iReady Reading + STAAR VAM",
-                "8": "SLOs + STAAR VAM",
-                "9": "TEKSReady + SLO",
-                "10": "FitnessGram + SLO",
+                "2": "Amplify mClass-RLA, iReady-Math",
+                "5": "iReady Reading, iReady Math, STAAR VAM",
+                "6": "iReady Math, STAAR VAM",
+                "7": "iReady Reading, STAAR VAM",
+                "8": "SLOs, STAAR VAM",
+                "9": "TEKSReady Pre/Post-Test, SLO",
+                "10": "FitnessGram, SLO",
                 "11": "SLO",
                 "12": "SLO"
             }
 
+            # -----------------------------------
+            # ✅ SURVEY
+            # -----------------------------------
             survey = (
-                "Includes a student perception survey."
-                if result_type in ["5","6","7","8","9","10","11"]
-                else "Does NOT include a student perception survey."
+                "This teacher type DOES include a student perception survey for students in grades 3–12."
+                if result_type in ["5", "6", "7", "8", "9", "10", "11"]
+                else "This teacher type does NOT include a student perception survey."
             )
 
+            # -----------------------------------
+            # ✅ DISPLAY
+            # -----------------------------------
             st.success(f"You are TIA Teacher Type {result_type}")
 
             st.markdown("### Description")
             st.info(descriptions.get(result_type, ""))
 
-            st.markdown("### Assessments")
+            st.markdown("### TIA Assessments")
             st.info(assessments.get(result_type, ""))
 
-            st.markdown("### Student Survey")
+            st.markdown("### Student Perception Survey")
             st.info(survey)
 
             st.link_button("Open Full TIA Teacher Type Guide", pdf_link)
+
+            st.markdown("""
+            <button onclick="window.print()" style="
+                background-color:#008066;
+                color:white;
+                padding:10px 20px;
+                border:none;
+                border-radius:8px;
+                font-weight:bold;
+                cursor:pointer;
+                margin-top:15px;
+            ">
+                Print My Results
+            </button>
+            """, unsafe_allow_html=True)
