@@ -1,6 +1,13 @@
 import streamlit as st
 import pandas as pd
 import base64
+from io import BytesIO
+from datetime import datetime
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 
 # -----------------------------------
 # Page setup
@@ -157,6 +164,105 @@ def any_grade(grades, grade_list):
     return any(g in grade_list for g in grades)
 
 
+def build_results_pdf(name, campus, result, description, assessments, survey, campus_type, grades, role, assignment):
+    """Create a clean one-page PDF summary and return it as bytes."""
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=0.55 * inch,
+        leftMargin=0.55 * inch,
+        topMargin=0.55 * inch,
+        bottomMargin=0.55 * inch
+    )
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        "CustomTitle",
+        parent=styles["Title"],
+        fontName="Helvetica-Bold",
+        fontSize=18,
+        leading=22,
+        textColor=colors.HexColor("#008066"),
+        alignment=1,
+        spaceAfter=10
+    )
+    heading_style = ParagraphStyle(
+        "CustomHeading",
+        parent=styles["Heading2"],
+        fontName="Helvetica-Bold",
+        fontSize=12,
+        leading=15,
+        textColor=colors.HexColor("#008066"),
+        spaceBefore=8,
+        spaceAfter=4
+    )
+    body_style = ParagraphStyle(
+        "CustomBody",
+        parent=styles["BodyText"],
+        fontName="Helvetica",
+        fontSize=10.5,
+        leading=14
+    )
+    small_style = ParagraphStyle(
+        "Small",
+        parent=styles["BodyText"],
+        fontName="Helvetica",
+        fontSize=9,
+        leading=11,
+        textColor=colors.gray
+    )
+
+    grades_text = ", ".join(grades) if grades else "N/A"
+    assignment_text = assignment if assignment else "N/A"
+
+    elements = []
+    elements.append(Paragraph("TIA Teacher Type Determination Summary", title_style))
+    elements.append(Paragraph("2026-2027 School Year", small_style))
+    elements.append(Spacer(1, 0.12 * inch))
+
+    summary_data = [
+        [Paragraph("Name", body_style), Paragraph(name, body_style)],
+        [Paragraph("Campus", body_style), Paragraph(campus, body_style)],
+        [Paragraph("Campus Type", body_style), Paragraph(campus_type, body_style)],
+        [Paragraph("Grade Level(s)", body_style), Paragraph(grades_text, body_style)],
+        [Paragraph("Role", body_style), Paragraph(role if role else "N/A", body_style)],
+        [Paragraph("Assignment/Content Area", body_style), Paragraph(assignment_text, body_style)],
+        [Paragraph("TIA Teacher Type", body_style), Paragraph(f"<b>{result}</b>", body_style)],
+    ]
+
+    summary_table = Table(summary_data, colWidths=[1.8 * inch, 5.0 * inch])
+    summary_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#E8F5F1")),
+        ("TEXTCOLOR", (0, 0), (0, -1), colors.HexColor("#004D40")),
+        ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#B7D7CE")),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("PADDING", (0, 0), (-1, -1), 7),
+    ]))
+    elements.append(summary_table)
+
+    elements.append(Paragraph("Description", heading_style))
+    elements.append(Paragraph(description, body_style))
+
+    elements.append(Paragraph("TIA Assessment Measures", heading_style))
+    elements.append(Paragraph(assessments, body_style))
+
+    elements.append(Paragraph("Student Perception Survey", heading_style))
+    elements.append(Paragraph(survey, body_style))
+
+    elements.append(Spacer(1, 0.2 * inch))
+    elements.append(Paragraph(
+        f"Generated on {datetime.now().strftime('%B %d, %Y')}. This summary is based on the responses entered in the Alief ISD TIA Teacher Type Determination Tool.",
+        small_style
+    ))
+
+    doc.build(elements)
+    pdf_bytes = buffer.getvalue()
+    buffer.close()
+    return pdf_bytes
+
+
 # -----------------------------------
 # Layout and styling
 # -----------------------------------
@@ -218,7 +324,7 @@ with center:
     }
 
     /* Buttons */
-    .stButton > button {
+    .stButton > button, .stDownloadButton > button {
         background-color: #008066;
         color: white;
         font-weight: bold;
@@ -227,8 +333,9 @@ with center:
         padding: 0.65rem 1.25rem !important;
         min-height: 46px !important;
     }
-    .stButton > button:hover {
+    .stButton > button:hover, .stDownloadButton > button:hover {
         background-color: #006655;
+        color: white;
     }
 
     /* Result/info boxes */
@@ -522,7 +629,7 @@ with center:
                 "12": "Other PK-12 Special Education Teachers, ALC Teachers, ESCE Teachers, Life/Reach/Read 180 Teachers, or Block ELC Teachers."
             }
 
-            assessments = {
+            assessment_measures = {
                 "1": "Circle",
                 "2": "Amplify mClass-RLA, iReady-Math",
                 "3": "iReady-Math, STEMScopes",
@@ -547,30 +654,39 @@ with center:
                 "teacher_results.csv", mode="a", header=False, index=False
             )
 
+            description_text = descriptions.get(type_number, "")
+            assessment_text = assessment_measures.get(type_number, "")
+
             st.success(f"Your TIA Teacher Type: {result}")
 
             st.markdown("### Description")
-            st.info(descriptions.get(type_number, ""))
+            st.info(description_text)
 
             st.markdown("### TIA Assessments")
-            st.info(assessments.get(type_number, ""))
+            st.info(assessment_text)
 
             st.markdown("### Student Perception Survey")
             st.info(survey)
 
-            st.link_button("Open Full TIA Teacher Type Guide", pdf_link)
+            pdf_bytes = build_results_pdf(
+                name=name,
+                campus=campus,
+                result=result,
+                description=description_text,
+                assessments=assessment_text,
+                survey=survey,
+                campus_type=campus_type,
+                grades=grades,
+                role=role,
+                assignment=assignment
+            )
 
-            st.markdown("""
-            <button onclick="window.print()" style="
-                background-color:#008066;
-                color:white;
-                padding:10px 20px;
-                border:none;
-                border-radius:8px;
-                font-weight:bold;
-                cursor:pointer;
-                margin-top:15px;
-            ">
-                Print My Results
-            </button>
-            """, unsafe_allow_html=True)
+            safe_name = "_".join(name.strip().split()) if name.strip() else "teacher"
+            st.download_button(
+                label="Download My Results as PDF",
+                data=pdf_bytes,
+                file_name=f"TIA_Teacher_Type_Result_{safe_name}.pdf",
+                mime="application/pdf"
+            )
+
+            st.link_button("Open Full TIA Teacher Type Guide", pdf_link)
