@@ -17,7 +17,7 @@ st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 # -----------------------------------
 # Load local Alief logo
 # -----------------------------------
-with open("Alief Logo3.png", "rb") as f:
+with open("Alief Logo.png", "rb") as f:
     encoded = base64.b64encode(f.read()).decode()
 
 # -----------------------------------
@@ -105,7 +105,7 @@ base_teks_map = {
 
 
 def normalize_assignment(assignment_display):
-    """Convert campus-specific labels into the internal content area used by the logic."""
+    """Convert campus-specific display labels into internal content area values used by the logic."""
     if assignment_display in ["Math", "Math or Math/Science"]:
         return "Math"
     if assignment_display in ["ELA/RLA", "RLA or RLA/Social Studies", "RLA / Reading"]:
@@ -116,6 +116,8 @@ def normalize_assignment(assignment_display):
         return "Foreign Language"
     if assignment_display == "Physical Education (PE) or Lifetime Pursuits/Activity Teacher":
         return "PE"
+    if assignment_display == "Career and Technical Education (CTE)":
+        return "CTE"
     return assignment_display
 
 
@@ -427,8 +429,7 @@ with center:
                     assignment_options = [
                         "Math or Math/Science",
                         "RLA or RLA/Social Studies",
-                        "Science",
-                        "Social Studies"
+                        "Science"
                     ]
                 else:
                     assignment_options = [
@@ -458,7 +459,7 @@ with center:
                     "Social Studies",
                     "Fine and Performing Arts",
                     "Language other than English (LOTE)",
-                    "CTE",
+                    "Career and Technical Education (CTE)",
                     "Physical Education (PE) or Lifetime Pursuits/Activity Teacher",
                     "Special Education / Specialized Program",
                     "Other Elective / Block Course"
@@ -525,6 +526,8 @@ with center:
             st.error("Please fill in required fields.")
         elif campus_type != "Early Learning Center" and len(grades) == 0:
             st.error("Please select at least one grade level.")
+        elif role == "In-Class Support" and len(support_areas) == 0:
+            st.error("Please select at least one content area you support.")
         else:
             result = "Unknown"
 
