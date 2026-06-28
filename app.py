@@ -222,7 +222,7 @@ with center:
             st.markdown("### Description")
             st.info(descriptions.get(result_type,""))
 
-st.markdown("### Assessments")
+            st.markdown("### Assessments")
             st.info(assessments.get(result_type,""))
 
             st.markdown("### Student Survey")
