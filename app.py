@@ -201,17 +201,15 @@ with center:
             ]
         )
 
-        # Auto-route ALC teachers immediately
+        # Auto-route ALC teachers without displaying the result early
         if role == "ALC Teacher":
             auto_result = "Type 12"
-            st.info("ALC Teachers are automatically classified as Type 12.")
 
-        # Interventionist ELD follow-up
+        # Interventionist ELD follow-up without displaying the result early
         elif role == "Interventionist":
             eld_interventionist = st.radio("Are you an ELD Interventionist?", ["Yes", "No"])
             if eld_interventionist == "Yes":
                 auto_result = "Type 7"
-                st.info("ELD Interventionists are automatically classified as Type 7.")
 
         # Do not ask additional questions if already auto-classified
         if auto_result is None:
