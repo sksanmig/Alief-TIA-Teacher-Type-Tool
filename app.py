@@ -170,7 +170,7 @@ with center:
 
     # -----------------------------------
     # RESULT LOGIC
-   ton("Show My Result"):
+   if st.button("Show My Result"):
 
         if not name or not campus:
             st.error("Please complete required fields.")
