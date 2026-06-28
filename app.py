@@ -26,7 +26,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ✅ PDF LINK
 pdf_link = "https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK"
 
 # -----------------------------------
@@ -120,7 +119,7 @@ with center:
                 ["Biology","English I","English II","U.S. History","None"]
             )
 
-        # ✅ FOLLOW-UP LOGIC
+        # ✅ EOC FOLLOW-UP
         retester_only = None
         if (
             (teaches_eoc is not None and teaches_eoc != "None")
@@ -131,6 +130,17 @@ with center:
                 ["Yes","No"]
             )
 
+        # ✅ TEKSREADY FOLLOW-UP
+        teksready_teacher = None
+        if (
+            (teaches_eoc is None or teaches_eoc == "None")
+            and teaches_algebra1 != "Yes"
+        ):
+            teksready_teacher = st.radio(
+                "Do you teach any TEKSReady-supported courses?",
+                ["Yes","No"]
+            )
+
     # -----------------------------------
     # ✅ RESULT
     # -----------------------------------
@@ -138,6 +148,7 @@ with center:
 
         if not name or not campus:
             st.error("Please complete required fields.")
+
         else:
             result_type = "Unknown"
 
@@ -145,7 +156,6 @@ with center:
                 result_type = "1" if pk_self == "Yes" else "12"
 
             else:
-
                 if assignment == "Self-Contained General Education":
                     if any(g in ["3","4","5"] for g in grades):
                         result_type = "5"
@@ -156,9 +166,7 @@ with center:
                     result_type = "11" if retester_only == "Yes" else "8"
 
                 elif teaches_eoc is not None and teaches_eoc != "None":
-                    result_type = "11" if retester_only == "Yes" else "8"
-
-                elif assignment == "Science":
+                    result_            elif assignment == "Science":
                     result_type = "8" if ("5" in grades or "8" in grades) else "9"
 
                 elif assignment == "Social Studies":
@@ -170,8 +178,12 @@ with center:
                 elif assignment == "RLA / Reading" and any(g in ["3","4","5","6","7","8"] for g in grades):
                     result_type = "7"
 
-                elif campus_type == "High School":
+                # ✅ TEKSREADY LOGIC (RESTORED)
+                elif teksready_teacher == "Yes":
                     result_type = "9"
+
+                elif teksready_teacher == "No":
+                    result_type = "12"
 
                 elif assignment == "PE":
                     result_type = "10"
@@ -220,10 +232,10 @@ with center:
             st.success(f"You are TIA Teacher Type {result_type}")
 
             st.markdown("### Description")
-            st.info(descriptions.get(result_type,""))
+            st.info(descriptions.get(result_type, ""))
 
             st.markdown("### Assessments")
-            st.info(assessments.get(result_type,""))
+            st.info(assessments.get(result_type, ""))
 
             st.markdown("### Student Survey")
             st.info(survey)
