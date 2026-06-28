@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 import base64
 
 # Wide layout for banner
@@ -170,7 +169,8 @@ with center:
 
     # -----------------------------------
     # RESULT LOGIC
-   if st.button("Show My Result"):
+    # -----------------------------------
+    if st.button("Show My Result"):
 
         if not name or not campus:
             st.error("Please complete required fields.")
