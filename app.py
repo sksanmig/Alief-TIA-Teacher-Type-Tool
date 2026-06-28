@@ -171,6 +171,7 @@ with center:
     teaches_algebra1 = None
     teaches_eoc = None
     retester_only = None
+    is_eld_interventionist = False
     teksready_courses_selected = []
     should_ask_teksready = False
 
@@ -190,11 +191,10 @@ with center:
         teacher_role = st.radio(
             "What best describes your role?",
             [
-                "General Education Teacher",
+                "Self-Contained General Education Teacher",
                 "In-Class Support Teacher",
                 "Interventionist",
                 "Dyslexia Teacher",
-                "ELD Interventionist",
                 "ALC Teacher",
                 "ESCE Teacher",
                 "Life / Reach / Read 180 Teacher",
@@ -202,6 +202,10 @@ with center:
                 "Other Special Education Teacher"
             ]
         )
+
+        if teacher_role == "Interventionist":
+            eld_response = st.radio("Are you an ELD Interventionist?", ["Yes", "No"])
+            is_eld_interventionist = eld_response == "Yes"
 
         assignment = st.radio(
             "Assignment / Content Area",
@@ -230,10 +234,10 @@ with center:
             )
 
         # Identify role groups
+        is_self_contained_role = teacher_role == "Self-Contained General Education Teacher"
         is_in_class_support = teacher_role == "In-Class Support Teacher"
         is_interventionist = teacher_role == "Interventionist"
         is_dyslexia = teacher_role == "Dyslexia Teacher"
-        is_eld_interventionist = teacher_role == "ELD Interventionist"
         is_alc_or_special_program = teacher_role in [
             "ALC Teacher",
             "ESCE Teacher",
@@ -251,9 +255,11 @@ with center:
         is_3_8_rla = assignment == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
         is_k_2_math = assignment == "Math" and any(g in ["K", "1", "2"] for g in grades)
         is_k_2_rla = assignment == "RLA / Reading" and any(g in ["K", "1", "2"] for g in grades)
-        is_self_contained = assignment == "Self-Contained General Education"
+        is_self_contained_assignment = assignment == "Self-Contained General Education"
         is_pe = assignment == "PE"
         is_special_program_assignment = assignment == "Special Education / Specialized Program"
+        is_k_2_dyslexia = is_dyslexia and any(g in ["K", "1", "2"] for g in grades)
+        is_3_8_dyslexia = is_dyslexia and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
 
         # Follow-up for STAAR EOC / Algebra I
         if is_eoc_course or is_algebra_eoc:
@@ -265,7 +271,8 @@ with center:
         # TEKSReady follow-up with subject-aligned course list
         should_ask_teksready = (
             not is_alc_or_special_program
-            and not is_self_contained
+            and not is_self_contained_role
+            and not is_self_contained_assignment
             and not is_pe
             and not is_special_program_assignment
             and not is_algebra_eoc
@@ -276,7 +283,8 @@ with center:
             and not is_3_8_rla
             and not is_k_2_math
             and not is_k_2_rla
-            and not is_dyslexia
+            and not is_k_2_dyslexia
+            and not is_3_8_dyslexia
             and not is_eld_interventionist
             and assignment in TEKSREADY_COURSES
         )
@@ -305,7 +313,7 @@ with center:
                 if is_alc_or_special_program or is_special_program_assignment:
                     result_type = "12"
 
-                elif is_self_contained:
+                elif is_self_contained_role or is_self_contained_assignment:
                     if any(g in ["3", "4", "5"] for g in grades):
                         result_type = "5"
                     elif any(g in ["K", "1", "2"] for g in grades):
@@ -328,13 +336,13 @@ with center:
                 elif is_3_8_math:
                     result_type = "6"
 
-                elif is_3_8_rla or is_dyslexia or is_eld_interventionist:
+                elif is_3_8_rla or is_3_8_dyslexia or is_eld_interventionist:
                     result_type = "7"
 
                 elif is_k_2_math:
                     result_type = "3"
 
-                elif is_k_2_rla:
+                elif is_k_2_rla or is_k_2_dyslexia:
                     result_type = "4"
 
                 elif is_pe:
@@ -409,4 +417,3 @@ with center:
                 Print My Results
             </button>
             """, unsafe_allow_html=True)
-
