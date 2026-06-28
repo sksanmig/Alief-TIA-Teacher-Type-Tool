@@ -119,6 +119,8 @@ def normalize_assignment(assignment_display):
         return "Math"
     if assignment_display in ["ELA/RLA", "RLA or RLA/Social Studies", "RLA / Reading"]:
         return "RLA / Reading"
+    if assignment_display == "Fine and Performing Arts":
+        return "Fine Arts"
     return assignment_display
 
 
@@ -278,12 +280,10 @@ with center:
                     "RLA or RLA/Social Studies",
                     "Science",
                     "Social Studies",
-                    "Fine Arts",
+                    "Fine and Performing Arts",
                     "Foreign Language",
-                    "CTE",
                     "PE",
-                    "Special Education / Specialized Program",
-                    "Other Elective / Block Course"
+                    "Special Education / Specialized Program"
                 ]
             else:
                 assignment_options = [
@@ -292,7 +292,7 @@ with center:
                     "ELA/RLA",
                     "Science",
                     "Social Studies",
-                    "Fine Arts",
+                    "Fine and Performing Arts",
                     "Foreign Language",
                     "CTE",
                     "PE",
