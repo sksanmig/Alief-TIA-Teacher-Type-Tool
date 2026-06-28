@@ -123,6 +123,8 @@ def normalize_assignment(assignment_display):
         return "Fine Arts"
     if assignment_display == "Language other than English (LOTE)":
         return "Foreign Language"
+    if assignment_display == "Physical Education (PE) or Lifetime Pursuits/Activity Teacher":
+        return "PE"
     return assignment_display
 
 
@@ -284,7 +286,7 @@ with center:
                     "Social Studies",
                     "Fine and Performing Arts",
                     "Language other than English (LOTE)",
-                    "PE",
+                    "Physical Education (PE) or Lifetime Pursuits/Activity Teacher",
                     "Special Education / Specialized Program"
                 ]
             else:
@@ -297,7 +299,7 @@ with center:
                     "Fine and Performing Arts",
                     "Language other than English (LOTE)",
                     "CTE",
-                    "PE",
+                    "Physical Education (PE) or Lifetime Pursuits/Activity Teacher",
                     "Special Education / Specialized Program",
                     "Other Elective / Block Course"
                 ]
