@@ -177,11 +177,11 @@ with center:
 
     else:
         if campus_type == "Elementary":
-            grades = st.multiselect("Select the grade level(s) you instruct:", ["K", "1", "2", "3", "4"])
+            grades = st.multiselect("Select the grade level(s) you instruct:", ["PK", "K", "1", "2", "3", "4", "5"])
         elif campus_type == "Intermediate":
             grades = st.multiselect("Select the grade level(s) you instruct:", ["5", "6"])
         elif campus_type == "Middle School":
-            grades = st.multiselect("Select the grade level(s) you instruct:", ["7", "8"])
+            grades = st.multiselect("Select the grade level(s) you instruct:", ["6", "7", "8"])
         else:
             grades = st.multiselect("Select the grade level(s) you instruct:", ["9", "10", "11", "12"])
 
@@ -322,14 +322,21 @@ with center:
 
                 # Dyslexia
                 elif role == "Dyslexia Teacher":
-                    result = "Type 4" if any(g in ["K", "1", "2"] for g in grades) else "Type 7"
+                    if any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
+                        result = "Type 7"
+                    elif any(g in ["K", "1", "2"] for g in grades):
+                        result = "Type 4"
+                    else:
+                        result = "Type 11"
 
                 # Self-contained / General Education Classroom Teacher
                 elif assignment == "Self-Contained General Education" or role == "General Education Classroom Teacher":
-                    if any(g in ["K", "1", "2"] for g in grades):
-                        result = "Type 2"
-                    elif any(g in ["3", "4", "5"] for g in grades):
+                    if any(g in ["3", "4", "5"] for g in grades):
                         result = "Type 5"
+                    elif any(g in ["K", "1", "2"] for g in grades):
+                        result = "Type 2"
+                    elif "PK" in grades:
+                        result = "Type 1"
                     else:
                         # If a high school/secondary general education classroom teacher is not self-contained,
                         # continue through the content rules below by temporarily leaving result unknown.
