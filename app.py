@@ -1,12 +1,14 @@
-
 import streamlit as st
 import pandas as pd
 import base64
 
+# -----------------------------------
+# Page setup
+# -----------------------------------
 st.set_page_config(page_title="Teacher Profile Tool", layout="wide")
 
 # -----------------------------------
-# Banner
+# Green banner with local Alief logo
 # -----------------------------------
 with open("Alief Logo.png", "rb") as f:
     encoded = base64.b64encode(f.read()).decode()
@@ -28,12 +30,12 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # -----------------------------------
-# Link
+# PDF guide link
 # -----------------------------------
 pdf_link = "https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_aliefisd_net/IQC3HSJ7-pB_Tp_Go-EsT4k0AX7Blc9bpbaJjk_-ZKZ4V4U?e=voJjZK"
 
 # -----------------------------------
-# Data Lists
+# TEKSReady course lists
 # -----------------------------------
 staar_courses = ["Algebra I", "Biology", "English I", "English II", "U.S. History"]
 
@@ -111,7 +113,7 @@ teks_map = {
 }
 
 # -----------------------------------
-# Layout and Styling
+# Layout and styling
 # -----------------------------------
 left, center, right = st.columns([1, 3, 1])
 
@@ -144,16 +146,13 @@ with center:
     """, unsafe_allow_html=True)
 
     # -----------------------------------
-    # Teacher Info
+    # Teacher info
     # -----------------------------------
     name = st.text_input("Enter your name")
     campus = st.text_input("Enter your campus")
 
     st.markdown("---")
 
-    # -----------------------------------
-    # Campus
-    # -----------------------------------
     campus_type = st.radio(
         "What type of campus do you teach at?",
         ["Early Learning Center", "Elementary", "Intermediate", "Middle School", "High School"]
@@ -166,10 +165,12 @@ with center:
     assignment = None
     support_areas = []
     eld_interventionist = None
+    auto_result = None
     teaches_algebra1 = None
     teaches_eoc = None
     eoc_retester_only = None
     selected_teks = []
+    show_teksready = False
 
     if campus_type == "Early Learning Center":
         pk_self = st.radio("Are you a general education PK Self-Contained teacher?", ["Yes", "No"])
@@ -187,7 +188,7 @@ with center:
         role = st.radio(
             "Which best describes your role?",
             [
-                "Self-Contained General Education Teacher",
+                "General Education Classroom Teacher",
                 "In-Class Support",
                 "Dyslexia Teacher",
                 "Interventionist",
@@ -200,74 +201,83 @@ with center:
             ]
         )
 
-        if role == "Interventionist":
+        # Auto-route ALC teachers immediately
+        if role == "ALC Teacher":
+            auto_result = "Type 12"
+            st.info("ALC Teachers are automatically classified as Type 12.")
+
+        # Interventionist ELD follow-up
+        elif role == "Interventionist":
             eld_interventionist = st.radio("Are you an ELD Interventionist?", ["Yes", "No"])
+            if eld_interventionist == "Yes":
+                auto_result = "Type 7"
+                st.info("ELD Interventionists are automatically classified as Type 7.")
 
-        assignment = st.radio(
-            "Which best describes your teaching assignment/content area?",
-            [
-                "Self-Contained General Education",
-                "Math",
-                "RLA / Reading",
-                "Science",
-                "Social Studies",
-                "Fine Arts",
-                "Foreign Language",
-                "CTE",
-                "PE",
-                "Special Education / Specialized Program",
-                "Other Elective / Block Course"
-            ]
-        )
-
-        # ICS Logic
-        if role == "In-Class Support":
-            support_areas = st.multiselect(
-                "What content areas do you support?",
-                ["K-2 Math", "K-2 RLA", "3-8 Math", "3-8 RLA", "STAAR / EOC Courses", "TEKSReady Courses"]
+        # Do not ask additional questions if already auto-classified
+        if auto_result is None:
+            assignment = st.radio(
+                "Which best describes your teaching assignment/content area?",
+                [
+                    "Self-Contained General Education",
+                    "Math",
+                    "RLA / Reading",
+                    "Science",
+                    "Social Studies",
+                    "Fine Arts",
+                    "Foreign Language",
+                    "CTE",
+                    "PE",
+                    "Special Education / Specialized Program",
+                    "Other Elective / Block Course"
+                ]
             )
 
-        # Algebra I
-        if assignment == "Math" and campus_type in ["Middle School", "High School"]:
-            teaches_algebra1 = st.radio("Do you teach Algebra I?", ["Yes", "No"])
+            # In-Class Support logic
+            if role == "In-Class Support":
+                support_areas = st.multiselect(
+                    "What content areas do you support?",
+                    ["K-2 Math", "K-2 RLA", "3-8 Math", "3-8 RLA", "STAAR / EOC Courses", "TEKSReady Courses"]
+                )
 
-        # EOC
-        if assignment in ["Science", "Social Studies", "RLA / Reading"] and campus_type == "High School":
-            teaches_eoc = st.radio("Do you teach STAAR EOC courses?", staar_courses + ["None"])
+            # Algebra I
+            if assignment == "Math" and campus_type in ["Middle School", "High School"]:
+                teaches_algebra1 = st.radio("Do you teach Algebra I?", ["Yes", "No"])
 
-        # EOC/Algebra I Retester/Newcomer Follow-up
-        if teaches_algebra1 == "Yes" or (teaches_eoc in staar_courses):
-            eoc_retester_only = st.radio(
-                "Do you teach only retesters or students new to the country taking STAAR for the first time?",
-                ["Yes", "No"]
-            )
+            # EOC
+            if assignment in ["Science", "Social Studies", "RLA / Reading"] and campus_type == "High School":
+                teaches_eoc = st.radio("Do you teach STAAR EOC courses?", staar_courses + ["None"])
 
-        # TEKSReady Course Logic
-        # Math: if no Algebra I, show TEKSReady Math courses when not already K-8 math.
-        show_teksready = False
+            # EOC/Algebra I retester/newcomer follow-up
+            if teaches_algebra1 == "Yes" or (teaches_eoc in staar_courses):
+                eoc_retester_only = st.radio(
+                    "Do you teach only retesters or students new to the country taking STAAR for the first time?",
+                    ["Yes", "No"]
+                )
 
-        if assignment == "Math":
-            if teaches_algebra1 == "No" and grade not in ["3", "4", "5", "6", "7", "8", "K", "1", "2"]:
-                show_teksready = True
+            # TEKSReady course logic
+            # Math: if not Algebra I, show TEKSReady Math courses when not already K-8 Math.
+            if assignment == "Math":
+                if teaches_algebra1 == "No" and grade not in ["K", "1", "2", "3", "4", "5", "6", "7", "8"]:
+                    show_teksready = True
 
-        elif assignment in ["RLA / Reading", "Science", "Social Studies", "Fine Arts", "Foreign Language", "CTE"]:
-            is_eoc = teaches_eoc in staar_courses
-            is_staar_science = assignment == "Science" and grade in ["5", "8"]
-            is_staar_social_studies = assignment == "Social Studies" and grade == "8"
-            is_3_8_rla = assignment == "RLA / Reading" and grade in ["3", "4", "5", "6", "7", "8"]
-            is_k_2_rla = assignment == "RLA / Reading" and grade in ["K", "1", "2"]
+            elif assignment in ["RLA / Reading", "Science", "Social Studies", "Fine Arts", "Foreign Language", "CTE"]:
+                is_eoc = teaches_eoc in staar_courses
+                is_staar_science = assignment == "Science" and grade in ["5", "8"]
+                is_staar_social_studies = assignment == "Social Studies" and grade == "8"
+                is_3_8_rla = assignment == "RLA / Reading" and grade in ["3", "4", "5", "6", "7", "8"]
+                is_k_2_rla = assignment == "RLA / Reading" and grade in ["K", "1", "2"]
 
-            if not is_eoc and not is_staar_science and not is_staar_social_studies and not is_3_8_rla and not is_k_2_rla:
-                show_teksready = True
+                if not is_eoc and not is_staar_science and not is_staar_social_studies and not is_3_8_rla and not is_k_2_rla:
+                    show_teksready = True
 
-        if show_teksready and assignment in teks_map:
-            selected_teks = st.multiselect(
-                "Select TEKSReady courses you teach:",
-                teks_map[assignment]
-            )
+            if show_teksready and assignment in teks_map:
+                selected_teks = st.multiselect(
+                    "Select TEKSReady courses you teach:",
+                    teks_map[assignment]
+                )
 
     # -----------------------------------
-    # FINAL CLASSIFICATION
+    # Final classification
     # -----------------------------------
     if st.button("Show My Result"):
 
@@ -280,14 +290,16 @@ with center:
                 result = "Type 1" if pk_self == "Yes" else "Type 12"
 
             else:
-                # Type 12 special program roles
-                if role in ["ALC Teacher", "ESCE Teacher", "Life / Reach / Read 180 Teacher", "Block ELC Teacher", "Other Special Education Teacher"]:
+                if auto_result is not None:
+                    result = auto_result
+
+                elif role in ["ESCE Teacher", "Life / Reach / Read 180 Teacher", "Block ELC Teacher", "Other Special Education Teacher"]:
                     result = "Type 12"
 
                 elif assignment == "Special Education / Specialized Program":
                     result = "Type 12"
 
-                # ICS Rules
+                # In-Class Support rules
                 elif role == "In-Class Support":
                     if "STAAR / EOC Courses" in support_areas:
                         result = "Type 8"
@@ -304,7 +316,7 @@ with center:
                     else:
                         result = "Type 11"
 
-                # Interventionist Rules
+                # Interventionist rules
                 elif role == "Interventionist" and eld_interventionist == "Yes":
                     result = "Type 7"
 
@@ -312,56 +324,60 @@ with center:
                 elif role == "Dyslexia Teacher":
                     result = "Type 4" if grade in ["K", "1", "2"] else "Type 7"
 
-                # Self-contained
-                elif assignment == "Self-Contained General Education" or role == "Self-Contained General Education Teacher":
+                # Self-contained / General Education Classroom Teacher
+                elif assignment == "Self-Contained General Education" or role == "General Education Classroom Teacher":
                     if grade in ["K", "1", "2"]:
                         result = "Type 2"
                     elif grade in ["3", "4", "5"]:
                         result = "Type 5"
                     else:
-                        result = "Type 12"
+                        # If a high school/secondary general education classroom teacher is not self-contained,
+                        # continue through the content rules below by temporarily leaving result unknown.
+                        result = "Unknown"
 
-                # Algebra I / EOC with retester-newcomer rule
-                elif teaches_algebra1 == "Yes":
-                    result = "Type 11" if eoc_retester_only == "Yes" else "Type 8"
+                # Continue if general education classroom teacher was not classified by self-contained grades
+                if result == "Unknown":
+                    # Algebra I / EOC with retester-newcomer rule
+                    if teaches_algebra1 == "Yes":
+                        result = "Type 11" if eoc_retester_only == "Yes" else "Type 8"
 
-                elif teaches_eoc in staar_courses:
-                    result = "Type 11" if eoc_retester_only == "Yes" else "Type 8"
+                    elif teaches_eoc in staar_courses:
+                        result = "Type 11" if eoc_retester_only == "Yes" else "Type 8"
 
-                # STAAR Type 8
-                elif grade == "5" and assignment == "Science":
-                    result = "Type 8"
+                    # STAAR Type 8
+                    elif grade == "5" and assignment == "Science":
+                        result = "Type 8"
 
-                elif grade == "8" and assignment == "Science":
-                    result = "Type 8"
+                    elif grade == "8" and assignment == "Science":
+                        result = "Type 8"
 
-                elif grade == "8" and assignment == "Social Studies":
-                    result = "Type 8"
+                    elif grade == "8" and assignment == "Social Studies":
+                        result = "Type 8"
 
-                # Type 3 / 4 / 6 / 7
-                elif assignment == "Math" and grade in ["K", "1", "2"]:
-                    result = "Type 3"
+                    # Type 3 / 4 / 6 / 7
+                    elif assignment == "Math" and grade in ["K", "1", "2"]:
+                        result = "Type 3"
 
-                elif assignment == "RLA / Reading" and grade in ["K", "1", "2"]:
-                    result = "Type 4"
+                    elif assignment == "RLA / Reading" and grade in ["K", "1", "2"]:
+                        result = "Type 4"
 
-                elif assignment == "Math" and grade in ["3", "4", "5", "6", "7", "8"]:
-                    result = "Type 6"
+                    elif assignment == "Math" and grade in ["3", "4", "5", "6", "7", "8"]:
+                        result = "Type 6"
 
-                elif assignment == "RLA / Reading" and grade in ["3", "4", "5", "6", "7", "8"]:
-                    result = "Type 7"
+                    elif assignment == "RLA / Reading" and grade in ["3", "4", "5", "6", "7", "8"]:
+                        result = "Type 7"
 
-                # Type 9 TEKSReady
-                elif len(selected_teks) > 0:
-                    result = "Type 9"
+                    # Type 9 TEKSReady
+                    elif len(selected_teks) > 0:
+                        result = "Type 9"
 
-                # Type 10 PE
-                elif assignment == "PE":
-                    result = "Type 10"
+                    # Type 10 PE
+                    elif assignment == "PE":
+                        result = "Type 10"
 
-                # Default elective/block
-                else:
-                    result = "Type 11"
+                    # Default elective/block
+                    else:
+                        result = "Type 11"
 
             type_number = result.replace("Type ", "")
 
