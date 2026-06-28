@@ -255,7 +255,8 @@ with center:
         is_pe = assignment == "PE"
         is_special_program_assignment = assignment == "Special Education / Specialized Program"
 
-        # Follow-up for _algebra_eoc:
+        # Follow-up for STAAR EOC / Algebra I
+        if is_eoc_course or is_algebra_eoc:
             retester_only = st.radio(
                 "Do you teach only retesters or students new to the country taking STAAR for the first time?",
                 ["Yes", "No"]
@@ -408,3 +409,4 @@ with center:
                 Print My Results
             </button>
             """, unsafe_allow_html=True)
+
