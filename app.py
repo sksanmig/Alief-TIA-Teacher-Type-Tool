@@ -168,10 +168,7 @@ with center:
     </div>
     <div style="background-color:#008066; padding:18px 20px; margin-bottom:25px; border-radius:10px; text-align:center;">
         <div style="color:white; font-size:30px; font-weight:bold; line-height:1.2;">
-            Alief ISD TIA Teacher Type Determination Tool
-        </div>
-        <div style="color:white; font-size:18px; margin-top:6px;">
-            Determine your TIA Teacher Type
+            TIA Teacher Type Determination Tool
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -202,6 +199,13 @@ with center:
     }
     </style>
     """, unsafe_allow_html=True)
+
+    # -----------------------------------
+    # Directions
+    # -----------------------------------
+    st.markdown(
+        "**Directions:** Answer the following guided questions to determine your TIA teacher type and assessment measures for the 2026-2027 school year."
+    )
 
     # -----------------------------------
     # Teacher info
