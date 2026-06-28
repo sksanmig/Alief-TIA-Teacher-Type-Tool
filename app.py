@@ -39,7 +39,7 @@ pdf_link = "https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_a
 # -----------------------------------
 staar_courses = ["Algebra I", "Biology", "English I", "English II", "U.S. History"]
 
-teks_map = {
+base_teks_map = {
     "Math": [
         "Algebra II",
         "Geometry",
@@ -111,6 +111,48 @@ teks_map = {
         "Principles of Hospitality Tour"
     ]
 }
+
+
+def get_teksready_courses(assignment, grades):
+    """Return only TEKSReady courses that align to the selected content area and grade level(s)."""
+    if assignment == "Science":
+        courses = []
+        if "6" in grades:
+            courses.append("Science 6")
+        if "7" in grades:
+            courses.append("Science 7")
+        if any(g in ["9", "10", "11", "12"] for g in grades):
+            courses.extend([
+                "Chemistry I",
+                "Physics I / AP Physics I",
+                "Aquatic Science",
+                "IPC",
+                "Environmental Systems",
+                "Astronomy"
+            ])
+        return courses
+
+    if assignment == "Social Studies":
+        courses = []
+        if "7" in grades:
+            courses.append("TX History, Gr 7")
+        if any(g in ["9", "10", "11", "12"] for g in grades):
+            courses.extend([
+                "World History / AP World History",
+                "World Geography",
+                "US Government / AP Government",
+                "Economics / Economics OnRamps",
+                "Psychology / AP Psychology",
+                "Personal Financial Literacy",
+                "Sociology",
+                "Personal Finan. Lit. & Econ.",
+                "African American Studies",
+                "Mexican American Studies"
+            ])
+        return courses
+
+    return base_teks_map.get(assignment, [])
+
 
 # -----------------------------------
 # Layout and styling
@@ -278,11 +320,13 @@ with center:
                 if not is_eoc and not is_staar_science and not is_staar_social_studies and not is_3_8_rla and not is_k_2_rla:
                     show_teksready = True
 
-            if show_teksready and assignment in teks_map:
-                selected_teks = st.multiselect(
-                    "Do you teach any of these courses? Select all that apply.",
-                    teks_map[assignment]
-                )
+            if show_teksready:
+                teksready_options = get_teksready_courses(assignment, grades)
+                if len(teksready_options) > 0:
+                    selected_teks = st.multiselect(
+                        "Do you teach any of these courses? Select all that apply.",
+                        teksready_options
+                    )
 
     # -----------------------------------
     # Final classification
