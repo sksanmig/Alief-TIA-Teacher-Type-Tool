@@ -27,7 +27,7 @@ base_teks_map = {
     "Math": [
         "Algebra II",
         "Geometry",
-        "MMA",
+        "Math Model Applications (MMA)",
         "Precalculus / AP Precalculus",
         "Statistics / AP Statistics",
         "Algebraic Reasoning"
@@ -113,7 +113,7 @@ def normalize_assignment(assignment_display):
 
 
 def get_teksready_courses(content_area, grades):
-    """Return only TEKSReady courses that align to the selected content area and grade level(s)."""
+    """Return only TEKSReady courses that align to selected content area and grade level(s)."""
     if content_area == "Science":
         courses = []
         if "6" in grades:
@@ -153,15 +153,16 @@ def get_teksready_courses(content_area, grades):
     return base_teks_map.get(content_area, [])
 
 
+def any_grade(grades, grade_list):
+    return any(g in grade_list for g in grades)
+
+
 # -----------------------------------
 # Layout and styling
 # -----------------------------------
 left, center, right = st.columns([1, 3, 1])
 
 with center:
-    # -----------------------------------
-    # Centered logo and banner
-    # -----------------------------------
     st.markdown(f"""
     <div style="text-align:center; margin-bottom:12px;">
         <img src="data:image/png;base64,{encoded}" style="height:90px;">
@@ -200,9 +201,6 @@ with center:
     </style>
     """, unsafe_allow_html=True)
 
-    # -----------------------------------
-    # Directions
-    # -----------------------------------
     st.markdown(
         "**Directions:** Answer the following guided questions to determine your TIA teacher type and assessment measures for the 2026-2027 school year."
     )
@@ -265,15 +263,28 @@ with center:
             auto_result = "Type 12"
         elif role == "Special Education Teacher (LIFE/REACH/TLC/READ180/Other)":
             auto_result = "Type 12"
-        elif role == "Dyslexia Teacher":
-            pass
         elif role == "Interventionist":
             eld_interventionist = st.radio("Are you an ELD Interventionist?", ["Yes", "No"])
             if eld_interventionist == "Yes":
                 auto_result = "Type 7"
 
         if auto_result is None and role != "Dyslexia Teacher":
-            if campus_type == "Elementary":
+            if role == "MCT (Model Classroom Teacher)":
+                if campus_type == "Elementary":
+                    assignment_options = [
+                        "Math or Math/Science",
+                        "RLA or RLA/Social Studies",
+                        "Science",
+                        "Social Studies"
+                    ]
+                else:
+                    assignment_options = [
+                        "Math",
+                        "ELA/RLA",
+                        "Science",
+                        "Social Studies"
+                    ]
+            elif campus_type == "Elementary":
                 assignment_options = [
                     "Self-Contained General Education",
                     "Math or Math/Science",
@@ -330,20 +341,21 @@ with center:
                 )
 
             if content_area == "Math":
-                if teaches_algebra1 == "No" and not any(g in ["K", "1", "2", "3", "4", "5", "6", "7", "8"] for g in grades):
+                if teaches_algebra1 == "No" and not any_grade(grades, ["K", "1", "2", "3", "4", "5", "6", "7", "8"]):
                     show_teksready = True
 
             elif content_area in ["RLA / Reading", "Science", "Social Studies", "Fine Arts", "Foreign Language", "CTE"]:
                 is_eoc = teaches_eoc in staar_courses
-                is_staar_science = content_area == "Science" and any(g in ["5", "8"] for g in grades)
+                is_staar_science = content_area == "Science" and any_grade(grades, ["5", "8"])
                 is_staar_social_studies = content_area == "Social Studies" and "8" in grades
-                is_3_8_rla = content_area == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades)
-                is_k_2_rla = content_area == "RLA / Reading" and any(g in ["K", "1", "2"] for g in grades)
+                is_3_8_rla = content_area == "RLA / Reading" and any_grade(grades, ["3", "4", "5", "6", "7", "8"])
+                is_k_2_rla = content_area == "RLA / Reading" and any_grade(grades, ["K", "1", "2"])
 
                 if not is_eoc and not is_staar_science and not is_staar_social_studies and not is_3_8_rla and not is_k_2_rla:
                     show_teksready = True
 
-            if show_teksready:
+            # Elementary MCTs cannot be TEKSReady teachers.
+            if show_teksready and not (role == "MCT (Model Classroom Teacher)" and campus_type == "Elementary"):
                 teksready_options = get_teksready_courses(content_area, grades)
                 if len(teksready_options) > 0:
                     selected_teks = st.multiselect(
@@ -371,9 +383,9 @@ with center:
                     result = auto_result
 
                 elif role == "Dyslexia Teacher":
-                    if any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
+                    if any_grade(grades, ["3", "4", "5", "6", "7", "8"]):
                         result = "Type 7"
-                    elif any(g in ["K", "1", "2"] for g in grades):
+                    elif any_grade(grades, ["K", "1", "2"]):
                         result = "Type 4"
                     else:
                         result = "Type 11"
@@ -400,10 +412,10 @@ with center:
                 elif role == "Interventionist" and eld_interventionist == "Yes":
                     result = "Type 7"
 
-                elif content_area == "Self-Contained General Education" or role in ["General Education Classroom Teacher", "MCT (Model Classroom Teacher)"]:
-                    if any(g in ["3", "4", "5"] for g in grades):
+                elif content_area == "Self-Contained General Education":
+                    if any_grade(grades, ["3", "4", "5"]):
                         result = "Type 5"
-                    elif any(g in ["K", "1", "2"] for g in grades):
+                    elif any_grade(grades, ["K", "1", "2"]):
                         result = "Type 2"
                     elif "PK" in grades:
                         result = "Type 1"
@@ -426,16 +438,16 @@ with center:
                     elif "8" in grades and content_area == "Social Studies":
                         result = "Type 8"
 
-                    elif content_area == "Math" and any(g in ["K", "1", "2"] for g in grades):
+                    elif content_area == "Math" and any_grade(grades, ["K", "1", "2"]):
                         result = "Type 3"
 
-                    elif content_area == "RLA / Reading" and any(g in ["K", "1", "2"] for g in grades):
+                    elif content_area == "RLA / Reading" and any_grade(grades, ["K", "1", "2"]):
                         result = "Type 4"
 
-                    elif content_area == "Math" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
+                    elif content_area == "Math" and any_grade(grades, ["3", "4", "5", "6", "7", "8"]):
                         result = "Type 6"
 
-                    elif content_area == "RLA / Reading" and any(g in ["3", "4", "5", "6", "7", "8"] for g in grades):
+                    elif content_area == "RLA / Reading" and any_grade(grades, ["3", "4", "5", "6", "7", "8"]):
                         result = "Type 7"
 
                     elif len(selected_teks) > 0:
