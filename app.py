@@ -30,6 +30,16 @@ pdf_link = "https://aliefisd-my.sharepoint.com/:b:/g/personal/stefan_sanmiguel_a
 # -----------------------------------
 staar_courses = ["Algebra I", "Biology", "English I", "English II", "U.S. History"]
 
+ineligible_positions = [
+    "ADPE Teacher",
+    "CLC Teacher",
+    "CTE-Outreach",
+    "Homebound Teacher",
+    "SPED ED VAC Teacher",
+    "SPED 18+ Teacher",
+    "Vision Teacher"
+]
+
 base_teks_map = {
     "Math": [
         "Algebra II",
@@ -166,7 +176,7 @@ def any_grade(grades, grade_list):
     return any(g in grade_list for g in grades)
 
 
-def build_results_pdf(name, campus, result, description, assessments, survey, campus_type, grades, role, assignment):
+def build_results_pdf(name, staff_id, campus, result, description, assessments, survey, campus_type, grades, role, assignment, ineligible_position="No"):
     """Create a clean one-page PDF summary and return it as bytes."""
     buffer = BytesIO()
     doc = SimpleDocTemplate(
@@ -225,6 +235,7 @@ def build_results_pdf(name, campus, result, description, assessments, survey, ca
 
     summary_data = [
         [Paragraph("Name", body_style), Paragraph(name, body_style)],
+        [Paragraph("Staff ID", body_style), Paragraph(staff_id, body_style)],
         [Paragraph("Campus", body_style), Paragraph(campus, body_style)],
         [Paragraph("Campus Type", body_style), Paragraph(campus_type, body_style)],
         [Paragraph("Grade Level(s)", body_style), Paragraph(grades_text, body_style)],
@@ -232,6 +243,12 @@ def build_results_pdf(name, campus, result, description, assessments, survey, ca
         [Paragraph("Assignment/Content Area", body_style), Paragraph(assignment_text, body_style)],
         [Paragraph("TIA Teacher Type", body_style), Paragraph(f"<b>{result}</b>", body_style)],
     ]
+
+    if ineligible_position != "No":
+        summary_data.insert(
+            6,
+            [Paragraph("Ineligible Position", body_style), Paragraph(ineligible_position, body_style)]
+        )
 
     summary_table = Table(summary_data, colWidths=[1.8 * inch, 5.0 * inch])
     summary_table.setStyle(TableStyle([
@@ -363,6 +380,7 @@ with center:
     # -----------------------------------
     # Teacher info
     # -----------------------------------
+    staff_id = st.text_input("Enter your Staff ID")
     name = st.text_input("Enter your name")
     campus = st.text_input("Enter your campus")
 
@@ -371,6 +389,11 @@ with center:
     campus_type = st.radio(
         "What type of campus do you teach at?",
         ["Early Learning Center", "Elementary", "Intermediate", "Middle School", "High School"]
+    )
+
+    ineligible_position = st.radio(
+        "Are you in any of the following non-TIA-eligible positions?",
+        ["No"] + ineligible_positions
     )
 
     # Defaults
@@ -388,10 +411,10 @@ with center:
     selected_teks = []
     show_teksready = False
 
-    if campus_type == "Early Learning Center":
+    if ineligible_position == "No" and campus_type == "Early Learning Center":
         pk_self = st.radio("Are you a general education PK Self-Contained teacher?", ["Yes", "No"])
 
-    else:
+    elif ineligible_position == "No":
         if campus_type == "Elementary":
             grades = st.multiselect("Select the grade level(s) you instruct:", ["PK", "K", "1", "2", "3", "4", "5"])
         elif campus_type == "Intermediate":
@@ -522,16 +545,19 @@ with center:
     # -----------------------------------
     if st.button("Show My Result"):
 
-        if not name or not campus:
+        if not staff_id or not name or not campus:
             st.error("Please fill in required fields.")
-        elif campus_type != "Early Learning Center" and len(grades) == 0:
+        elif ineligible_position == "No" and campus_type != "Early Learning Center" and len(grades) == 0:
             st.error("Please select at least one grade level.")
-        elif role == "In-Class Support" and len(support_areas) == 0:
+        elif ineligible_position == "No" and role == "In-Class Support" and len(support_areas) == 0:
             st.error("Please select at least one content area you support.")
         else:
             result = "Unknown"
 
-            if campus_type == "Early Learning Center":
+            if ineligible_position != "No":
+                result = "Ineligible"
+
+            elif campus_type == "Early Learning Center":
                 result = "Type 1" if pk_self == "Yes" else "Type 12"
 
             else:
@@ -629,7 +655,8 @@ with center:
                 "9": "3-12 TEKSReady general education and In-Class Support Teachers of non-STAAR core, elective, or block courses. This type includes a student perception survey.",
                 "10": "K-12 Physical Education Teachers. This type includes a student perception survey.",
                 "11": "3-12 SLO block and elective general education teachers, or teachers of only STAAR retesters/newcomers taking STAAR for the first time. This type includes a student perception survey.",
-                "12": "Other PK-12 Special Education Teachers, ALC Teachers, ESCE Teachers, Life/Reach/Read 180 Teachers, or Block ELC Teachers."
+                "12": "Other PK-12 Special Education Teachers, ALC Teachers, ESCE Teachers, Life/Reach/Read 180 Teachers, or Block ELC Teachers.",
+                "Ineligible": "This position is not TIA-eligible."
             }
 
             assessment_measures = {
@@ -644,16 +671,29 @@ with center:
                 "9": "SLO, TEKSReady Pre/Post-Test",
                 "10": "SLO, FitnessGram",
                 "11": "SLO",
-                "12": "SLO"
+                "12": "SLO",
+                "Ineligible": "Not Applicable"
             }
 
-            survey = (
-                "This teacher type DOES include a student perception survey for students in grades 3-12."
-                if type_number in ["5", "6", "7", "8", "9", "10", "11"]
-                else "This teacher type does NOT include a student perception survey."
-            )
+            if type_number == "Ineligible":
+                survey = "Not Applicable"
+            else:
+                survey = (
+                    "This teacher type DOES include a student perception survey for students in grades 3-12."
+                    if type_number in ["5", "6", "7", "8", "9", "10", "11"]
+                    else "This teacher type does NOT include a student perception survey."
+                )
 
-            pd.DataFrame([{"Name": name, "Campus": campus, "Type": result}]).to_csv(
+            pd.DataFrame([{
+                "Staff ID": staff_id,
+                "Name": name,
+                "Campus": campus,
+                "Campus Type": campus_type,
+                "Role": role if role else "N/A",
+                "Assignment": assignment if assignment else "N/A",
+                "Ineligible Position": ineligible_position,
+                "Type": result
+            }]).to_csv(
                 "teacher_results.csv", mode="a", header=False, index=False
             )
 
@@ -673,6 +713,7 @@ with center:
 
             pdf_bytes = build_results_pdf(
                 name=name,
+                staff_id=staff_id,
                 campus=campus,
                 result=result,
                 description=description_text,
@@ -681,7 +722,8 @@ with center:
                 campus_type=campus_type,
                 grades=grades,
                 role=role,
-                assignment=assignment
+                assignment=assignment,
+                ineligible_position=ineligible_position
             )
 
             safe_name = "_".join(name.strip().split()) if name.strip() else "teacher"
