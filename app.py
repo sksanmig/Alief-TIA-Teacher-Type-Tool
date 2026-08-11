@@ -756,3 +756,13 @@ with center:
             )
 
             st.link_button("Open Full TIA Teacher Type Guide", pdf_link)
+
+            st.markdown(
+                """
+                <div style="margin-top:25px; padding:14px; border-left:5px solid #008066; background-color:#F2FAF7; border-radius:6px; font-size:18px; line-height:1.45;">
+                    <strong>Disclaimer:</strong> If you believe your generated TIA teacher type is not accurate, please reach out to
+                    <a href="mailto:AliefTIAQuestions@aliefisd.net">AliefTIAQuestions@aliefisd.net</a> for support.
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
