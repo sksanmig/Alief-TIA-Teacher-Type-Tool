@@ -176,7 +176,18 @@ def any_grade(grades, grade_list):
     return any(g in grade_list for g in grades)
 
 
-def build_results_pdf(name, staff_id, campus, result, description, assessments, survey, campus_type, grades, role, assignment, ineligible_position="No"):
+def get_ttess_assessment(type_number):
+    """Return the assessment used for T-TESS based on the final teacher type."""
+    if type_number == "Ineligible":
+        return "Not Applicable"
+    if type_number == "1":
+        return "Circle"
+    if type_number in ["2", "3", "4", "5", "6", "7"]:
+        return "iReady Math or RLA"
+    return "SLO"
+
+
+def build_results_pdf(name, staff_id, campus, result, description, assessments, survey, ttess_assessment, campus_type, grades, role, assignment, ineligible_position="No"):
     """Create a clean one-page PDF summary and return it as bytes."""
     buffer = BytesIO()
     doc = SimpleDocTemplate(
@@ -269,6 +280,9 @@ def build_results_pdf(name, staff_id, campus, result, description, assessments, 
 
     elements.append(Paragraph("Student Perception Survey", heading_style))
     elements.append(Paragraph(survey, body_style))
+
+    elements.append(Paragraph("Assessment used for T-TESS", heading_style))
+    elements.append(Paragraph(ttess_assessment, body_style))
 
     elements.append(Spacer(1, 0.2 * inch))
     elements.append(Paragraph(
@@ -684,6 +698,8 @@ with center:
                     else "This teacher type does NOT include a student perception survey."
                 )
 
+            ttess_assessment = get_ttess_assessment(type_number)
+
             pd.DataFrame([{
                 "Staff ID": staff_id,
                 "Name": name,
@@ -692,7 +708,8 @@ with center:
                 "Role": role if role else "N/A",
                 "Assignment": assignment if assignment else "N/A",
                 "Ineligible Position": ineligible_position,
-                "Type": result
+                "Type": result,
+                "Assessment used for T-TESS": ttess_assessment
             }]).to_csv(
                 "teacher_results.csv", mode="a", header=False, index=False
             )
@@ -711,6 +728,9 @@ with center:
             st.markdown("### Student Perception Survey")
             st.info(survey)
 
+            st.markdown("### Assessment used for T-TESS")
+            st.info(ttess_assessment)
+
             pdf_bytes = build_results_pdf(
                 name=name,
                 staff_id=staff_id,
@@ -719,6 +739,7 @@ with center:
                 description=description_text,
                 assessments=assessment_text,
                 survey=survey,
+                ttess_assessment=ttess_assessment,
                 campus_type=campus_type,
                 grades=grades,
                 role=role,
